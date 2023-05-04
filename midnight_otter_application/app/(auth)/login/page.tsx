@@ -16,7 +16,7 @@ export default function Home() {
       <Link href="/" className="absolute top-4 left-4 md:top-8 md:left-8">
         <div className="flex align-middle items-center space-x-2 text-slate-400 hover:text-slate-300 cursor-pointer">
           <Icons.chevronLeft className="mr-2 h-5 w-5" />
-          Back
+          Homepage
         </div>
       </Link>
       <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-80">
