@@ -5,9 +5,9 @@ import {
   LucideProps,
   Loader2,
   type Icon as LucideIcon,
-} from "lucide-react"
+} from "lucide-react";
 
-export type Icon = LucideIcon
+export type Icon = LucideIcon;
 
 export const Icons = {
   logo: Codesandbox,
@@ -48,4 +48,4 @@ export const Icons = {
       />
     </svg>
   ),
-}
+};

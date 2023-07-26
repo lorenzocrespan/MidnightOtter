@@ -1,14 +1,13 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 
 export function Navbar() {
-
-    return (
-        <div>
-            <div className='absolute z-10 top-0 left-0 w-full h-40 bg-pink-300'>
-               Ciao    
-            </div>
-        </div>
-    )
+  return (
+    <div>
+      <div className="absolute left-0 top-0 z-10 h-40 w-full bg-pink-300">
+        Ciao
+      </div>
+    </div>
+  );
 }

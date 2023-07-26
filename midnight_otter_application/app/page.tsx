@@ -1,7 +1,7 @@
-'use client'
+"use client";
 
-import dynamic from 'next/dynamic'
-import { Navbar } from '@/components/navbar'
+import dynamic from "next/dynamic";
+import { Navbar } from "@/components/navbar";
 
 /**
  * > Lazy Loading
@@ -9,9 +9,14 @@ import { Navbar } from '@/components/navbar'
  * Dynamic imports permit the use of server-side rendering without the need to load all supporting code.
  */
 
-
-const Title = dynamic(() => import('@/components/rootPage/introSite').then((mod) => mod.Title), { ssr: false })
-const Section = dynamic(() => import('@/components/rootPage/section').then((mod) => mod.Section), { ssr: false })
+const Title = dynamic(
+  () => import("@/components/rootPage/introSite").then((mod) => mod.Title),
+  { ssr: false }
+);
+const Section = dynamic(
+  () => import("@/components/rootPage/section").then((mod) => mod.Section),
+  { ssr: false }
+);
 
 export default function Page() {
   return (
@@ -19,5 +24,5 @@ export default function Page() {
       <Title />
       <Section />
     </>
-  )
+  );
 }
