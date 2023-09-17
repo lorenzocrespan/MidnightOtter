@@ -1,43 +1,31 @@
-
+// Tailwind CSS imports
 import "./globals.css";
-import { Inter } from "next/font/google";
-
+// Types imports
 import { siteConfig } from "@/config/siteConfig";
 
-const inter = Inter({ subsets: ["latin"] });
-
+// Definition of the DefaultLayoutProps type that is used in the RootLayout function.
 interface DefaultLayoutProps {
   children: React.ReactNode;
 }
 
+// Definition of the metadata for the site.
 export const metadata = {
   title: {
     default: siteConfig.name,
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
-  keywords: [
-    "Next.js",
-    "React",
-    "Tailwind CSS",
-    "Server Components",
-    "Radix UI",
-  ],
+  keywords: ["Next.js", "React", "Tailwind CSS"],
   authors: [
     {
-      name: "shadcn",
-      url: "https://shadcn.com",
+      name: "Lorenzo Crespan",
+      url: "ADD_YOUR_URL_HERE",
     },
   ],
-  creator: "shadcn",
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "white" },
-    { media: "(prefers-color-scheme: dark)", color: "black" },
-  ],
+  creator: "Lorenzo Crespan",
   openGraph: {
     type: "website",
-    locale: "en_US",
-    url: siteConfig.url,
+    locale: "it_IT",
     title: siteConfig.name,
     description: siteConfig.description,
     siteName: siteConfig.name,
@@ -46,24 +34,18 @@ export const metadata = {
     card: "summary_large_image",
     title: siteConfig.name,
     description: siteConfig.description,
-    images: [`${siteConfig.url}/og.jpg`],
-    creator: "@shadcn",
   },
   icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon-16x16.png",
-    apple: "/apple-touch-icon.png",
+    icon: "/images/favicon.ico",
+    apple: "/images/apple-touch-icon.png",
   },
-  manifest: `${siteConfig.url}/site.webmanifest`,
 };
 
-export default function RootLayout({ children }: DefaultLayoutProps) {
+export default function BaseLayout({ children }: DefaultLayoutProps) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="it" suppressHydrationWarning>
       <head />
-      <body className="min-h-screen bg-background antialiased">
-        {children}
-      </body>
+      <body className="bg-background min-h-screen antialiased">{children}</body>
     </html>
   );
 }

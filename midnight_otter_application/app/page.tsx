@@ -1,28 +1,31 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import { Navbar } from "@/components/navbar";
-
-/**
- * > Lazy Loading
- * Lazy loading is a technique for loading code only when it is needed.
- * Dynamic imports permit the use of server-side rendering without the need to load all supporting code.
- */
-
-const Title = dynamic(
-  () => import("@/components/rootPage/introSite").then((mod) => mod.Title),
-  { ssr: false }
-);
-const Section = dynamic(
-  () => import("@/components/rootPage/section").then((mod) => mod.Section),
-  { ssr: false }
-);
+// Components imports
+import { MainNav } from "@/components/modalComponents/navigationBarModal/leftNavbar";
+import { LogNav } from "@/components/modalComponents/navigationBarModal/rightNavbar";
+import { Showcase } from "@/components/modalComponents/showcaseModal/showcaseSection";
+import { Section } from "@/components/baseComponents/section";
+// Config imports
+import {
+  introductionPageLeftConfig,
+  introductionPageRightConfig,
+} from "@/config/introductionPage";
 
 export default function Page() {
   return (
-    <>
-      <Title />
+    <div className="container flex min-h-screen flex-col">
+      <header className=" sticky top-0 z-40 border-b">
+        <div className=" flex h-16 items-center justify-between py-6">
+          <MainNav items={introductionPageLeftConfig.mainNav} />
+          <nav>
+            <LogNav items={introductionPageRightConfig.mainNav} />
+          </nav>
+        </div>
+      </header>
+      <div className="min-h-screen">
+        <Showcase title="Midnight Otter" subtitle="Blockchain of custody" />
+      </div>
       <Section />
-    </>
+    </div>
   );
 }

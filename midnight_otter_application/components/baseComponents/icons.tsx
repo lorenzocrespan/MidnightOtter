@@ -4,16 +4,19 @@ import {
   ChevronRight,
   LucideProps,
   Loader2,
+  Pizza,
   type Icon as LucideIcon,
 } from "lucide-react";
 
 export type Icon = LucideIcon;
 
+// TODO: Add more icons
 export const Icons = {
   logo: Codesandbox,
   chevronLeft: ChevronLeft,
   chevronRight: ChevronRight,
   spinner: Loader2,
+  pizza: Pizza,
   gitHub: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"
