@@ -1,10 +1,10 @@
+"use client";
 // Framer motion imports
 // Framer motion provides a declarative, composable, and easy-to-use animation library for React.
 import { AnimatePresence, motion } from "framer-motion";
 // React imports
 import { Scene } from "@/components/baseComponents/canvas/scene";
 
-// 
 interface ShowcaseDataProps {
   title: string;
   subtitle: string;
@@ -14,6 +14,7 @@ export function Showcase(showcaseProps: ShowcaseDataProps) {
   return (
     <AnimatePresence>
       <motion.div
+        key="showcase"
         initial={{ opacity: 0 }}
         transition={{ duration: 3, type: "tween" }}
         animate={{ opacity: 1 }}
