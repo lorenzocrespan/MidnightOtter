@@ -2,12 +2,12 @@
 
 import * as React from "react";
 
-import { Icons } from "@/components/baseComponents/icons";
 import { IdentityInput } from "@/components/baseComponents/inputs/identityInput";
 import { passwordConfig, signFormConfig } from "@/config/signFormConfig";
 import { FormProvider, useForm } from "react-hook-form";
 import { SubtitleInputText } from "@/components/baseComponents/inputs/subtitleInputText";
 import { PasswordInput } from "@/components/baseComponents/inputs/passwordInput";
+import { AbsoluteSpinner } from "@/components/pageComponents/spinnerLoadingComponent";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -30,6 +30,7 @@ export function UserSigninForm({ className, ...props }: UserAuthFormProps) {
 
   return (
     <div className="flex flex-col gap-5" {...props}>
+      {isLoading && <AbsoluteSpinner />}
       <FormProvider {...methods}>
         <form>
           <div className="grid gap-3">
@@ -47,17 +48,13 @@ export function UserSigninForm({ className, ...props }: UserAuthFormProps) {
               onClick={handleSubmit(onSubmit)}
               disabled={isLoading}
             >
-              {isLoading && (
-                <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-              )}
               Sign In
             </button>
           </div>
         </form>
       </FormProvider>
-
       <div className="relative">
-        <div className="absolute inset-0 flex items-center">
+        <div className="absolute inset-0 z-10 flex items-center">
           <span className="w-full border-t border-slate-300" />
         </div>
       </div>

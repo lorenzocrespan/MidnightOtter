@@ -5,3 +5,11 @@ export function CubeSpinner() {
     </span>
   );
 }
+
+export function AbsoluteSpinner() {
+  return (
+    <div className="absolute inset-0 z-50 flex items-center bg-black">
+      {CubeSpinner()}
+    </div>
+  );
+}

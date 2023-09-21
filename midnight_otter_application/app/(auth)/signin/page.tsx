@@ -2,7 +2,6 @@
 import { Metadata } from "next";
 // React components imports
 import { Icons } from "@/components/baseComponents/icons";
-import { BackButton } from "@/components/baseComponents/buttons/backButton";
 import { TextLink } from "@/components/baseComponents/textLinks/textLink";
 import { UserSigninForm } from "@/components/modalComponents/formsModal/authModal/userSigninForm";
 
@@ -25,7 +24,6 @@ export default function SignupScreen() {
 
   return (
     <div className="flex h-screen w-screen flex-col items-center justify-center">
-      <BackButton title="Homepage" destination="/" />
       <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-80">
         <div className="flex flex-col space-y-2 text-center">
           <Icons.logo className="mx-auto h-10 w-10" />
