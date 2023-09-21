@@ -13,12 +13,12 @@ export default function Page() {
   return (
     <div className="container flex min-h-screen flex-col">
       <header className=" sticky top-0 z-40 border-b">
-        <div className=" flex h-16 items-center justify-between py-6">
-          <MainNav items={introductionPageLeftConfig.mainNav} />
-          <nav>
-            <LogNav items={introductionPageRightConfig.mainNav} />
-          </nav>
-        </div>
+          <div className=" flex h-16 items-center justify-between py-6">
+            <MainNav items={introductionPageLeftConfig.mainNav} />
+            <nav>
+              <LogNav items={introductionPageRightConfig.mainNav} />
+            </nav>
+          </div>
       </header>
       <div className="min-h-screen">
         <Showcase title="Midnight Otter" subtitle="Blockchain of custody" />
