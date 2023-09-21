@@ -9,3 +9,7 @@ export type InputAuthenticationDataType = {
   disabled?: boolean;
   verify?: boolean;
 };
+
+export type SubtitleInputTextDataType = {
+  text?: string;
+};

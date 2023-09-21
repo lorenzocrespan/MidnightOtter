@@ -6,7 +6,7 @@ import { BackButton } from "@/components/baseComponents/buttons/backButton";
 import { TextLink } from "@/components/baseComponents/textLinks/textLink";
 import { UserSigninForm } from "@/components/modalComponents/formsModal/authModal/userSigninForm";
 
-// Define metadata (title and description) for the page.
+// Update the metadata for the page.
 export const metadata: Metadata = {
   title: "Pagina di accesso",
   description: "Accesso al sito mediante le credenziali.",
@@ -17,7 +17,7 @@ interface SigninDataProps {
   description: string;
 }
 
-export default function Home() {
+export default function SignupScreen() {
   const signinProps: SigninDataProps = {
     title: "Welcome to Midnight Otter",
     description: "Enter your email and password to sign in to your account.",
@@ -34,7 +34,7 @@ export default function Home() {
         </div>
         <UserSigninForm />
         <TextLink
-          text="Don't have an account? Sign Up."
+          text="Don't have an account? Sign up."
           destination="/signup"
         />
       </div>
