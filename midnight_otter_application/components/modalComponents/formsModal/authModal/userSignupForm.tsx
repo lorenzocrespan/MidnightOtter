@@ -1,12 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { use } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { IdentityInput } from "@/components/baseComponents/inputs/identityInput";
 import { PasswordInput } from "@/components/baseComponents/inputs/passwordInput";
 import { SubtitleInputText } from "@/components/baseComponents/inputs/subtitleInputText";
 import { signFormConfig, verifyPasswordConfig } from "@/config/signFormConfig";
 import { AbsoluteSpinner } from "@/components/pageComponents/spinnerLoadingComponent";
+
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 

@@ -32,7 +32,7 @@ export function IdentityInput(identityInputProps: InputAuthenticationDataType) {
       })}
       type={identityInputProps.type}
       id={identityInputProps.id}
-      className={identityInputProps.className}
+      className="w-full rounded-md p-2 text-sm text-slate-900 outline outline-1 outline-slate-400"
       placeholder={identityInputProps.placeholder}
       autoCapitalize={identityInputProps.autoCapitalize}
       autoComplete={identityInputProps.autoComplete}

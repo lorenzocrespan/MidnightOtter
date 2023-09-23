@@ -15,7 +15,7 @@ export function PasswordInput(passwordInputProps: InputAuthenticationDataType) {
         className={passwordInputProps.className}
         placeholder={passwordInputProps.placeholder}
         autoCapitalize={passwordInputProps.autoCapitalize}
-        autoComplete={passwordInputProps.autoComplete}
+        autoComplete="w-full rounded-md p-2 text-sm text-slate-900 outline outline-1 outline-slate-400"
         autoCorrect={passwordInputProps.autoCorrect}
         disabled={passwordInputProps.disabled}
       />
@@ -36,7 +36,7 @@ export function PasswordInput(passwordInputProps: InputAuthenticationDataType) {
           className={passwordInputProps.className}
           placeholder={passwordInputProps.placeholder}
           autoCapitalize={passwordInputProps.autoCapitalize}
-          autoComplete={passwordInputProps.autoComplete}
+          autoComplete="w-full rounded-md p-2 text-sm text-slate-900 outline outline-1 outline-slate-400"
           autoCorrect={passwordInputProps.autoCorrect}
           disabled={passwordInputProps.disabled}
           defaultValue=""

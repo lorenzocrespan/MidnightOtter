@@ -6,6 +6,7 @@ import { siteConfig } from "@/config/siteConfig";
 // Definition of the DefaultLayoutProps type that is used in the RootLayout function.
 interface DefaultLayoutProps {
   children: React.ReactNode;
+  session: any;
 }
 
 // Definition of the metadata for the site.
@@ -41,11 +42,13 @@ export const metadata = {
   },
 };
 
-export default function BaseLayout({ children }: DefaultLayoutProps) {
+export default function BaseLayout({ children, session }: DefaultLayoutProps) {
   return (
     <html lang="it" suppressHydrationWarning>
       <head />
-      <body className="bg-background min-h-screen antialiased">{children}</body>
+        <body className="bg-background gbx-installed min-h-screen antialiased">
+          {children}
+        </body>
     </html>
   );
 }

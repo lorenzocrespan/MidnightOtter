@@ -8,10 +8,12 @@ import { FormProvider, useForm } from "react-hook-form";
 import { SubtitleInputText } from "@/components/baseComponents/inputs/subtitleInputText";
 import { PasswordInput } from "@/components/baseComponents/inputs/passwordInput";
 import { AbsoluteSpinner } from "@/components/pageComponents/spinnerLoadingComponent";
+import { useRouter } from "next/navigation";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function UserSigninForm({ className, ...props }: UserAuthFormProps) {
+  const router = useRouter();
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   const methods = useForm();
@@ -25,6 +27,7 @@ export function UserSigninForm({ className, ...props }: UserAuthFormProps) {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
+      router.push("/homepage");
     }, 2000);
   };
 
