@@ -11,8 +11,61 @@ datasource db {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  email    String  @unique
-  password String
-  name     String?
+  id            Int     @id @default(autoincrement())
+  blockchainId  String  @unique
+  email         String  @unique
+  password      String
+  name          String?
+  surname       String?
+  role          Role     @default(EXPERT)
+  tokens        Token[]
+  tokenSender   Operation[] @relation( name: "sender")
+  tokenReceiver Operation[] @relation( name: "receiver")
+}
+
+enum Role {
+  EXPERT
+  PUBLIC_ADMIN
+  MANTAINER
+}
+
+model Case {
+  id            Int     @id @default(autoincrement())
+  year            Int
+  status          Status  @default(INPROGRESS)
+  tokens          Token[]
+}
+
+enum Status {
+  INPROGRESS
+  ARCHIVED
+}
+
+model Token {
+  token           String  @id @default(uuid())
+  userInCharge    User    @relation(fields: [userInChargeId], references: [id])
+  userInChargeId  Int
+  caseRelated     Case    @relation(fields: [caseRelatedId], references: [id])
+  caseRelatedId   Int
+  operations      Operation[]
+}
+
+model Operation {
+  id              Int     @id @default(autoincrement())
+  timestamp       DateTime
+  blockReference  Int 
+  operationType   OperationType
+  tokens          Token   @relation(fields: [tokenId], references: [token])
+  tokenId         String
+  sender          User    @relation( name: "sender" ,fields: [senderId], references: [id])
+  senderId        Int
+  receiver        User    @relation(name: "receiver", fields: [receiverId], references: [id])
+  receiverId      Int
+}
+
+enum OperationType {
+  CREATE
+  UPDATE
+  TRANSFER
+  INVALIDATE
 }
