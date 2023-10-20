@@ -3,9 +3,9 @@ import { MainNav } from "@/components/modalComponents/navigationBarModal/leftNav
 import { LogNav } from "@/components/modalComponents/navigationBarModal/rightNavbar";
 // Config imports
 import {
-  introductionPageLeftConfig,
-  introductionPageRightConfig,
-} from "@/config/introductionPage";
+  loggedPageLeftConfig,
+  loggedPageRightConfig,
+} from "@/config/loggedNavbarConfig";
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -16,9 +16,9 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
     <div className="container flex min-h-screen flex-col">
       <header className=" sticky top-0 z-40 border-b">
         <div className=" flex h-16 items-center justify-between py-6">
-          <MainNav items={introductionPageLeftConfig.mainNav} />
+          <MainNav items={loggedPageLeftConfig.mainNav} />
           <nav>
-            <LogNav items={introductionPageRightConfig.mainNav} />
+            <LogNav items={loggedPageRightConfig.mainNav} />
           </nav>
         </div>
       </header>

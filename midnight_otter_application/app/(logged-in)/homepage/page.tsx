@@ -1,4 +1,9 @@
+import { UserInformation } from "@/components/modalComponents/informationSection/userInformation";
 
 export default function Page() {
-  return <p>Homepage</p>;
+  return (
+    <div className="flex flex-col gap-4">
+      <UserInformation />
+    </div>
+  );
 }
