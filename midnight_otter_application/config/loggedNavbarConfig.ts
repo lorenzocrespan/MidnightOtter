@@ -10,13 +10,13 @@ export const loggedPageLeftConfig: BaseNavbarType = {
       disabled: false,
     },
     {
-      title: "Sezione 2",
-      href: "/homepage/#Sezione2",
+      title: "Upload page",
+      href: "/uploadpage",
       disabled: false,
     },
     {
-      title: "Sezione 3",
-      href: "/homepage/#Sezione3",
+      title: "Search page",
+      href: "/searchpage",
       disabled: false,
     },
     {

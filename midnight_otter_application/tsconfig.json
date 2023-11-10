@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2017",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -29,6 +29,6 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "components/baseComponents/canvas/mesh.tsx"
-  ],
+, "scripts/deploy.js", "services/infura.ts"  ],
   "exclude": ["node_modules"]
 }

@@ -5,6 +5,7 @@ import {
   LucideProps,
   Loader2,
   Pizza,
+  Accessibility,
   type Icon as LucideIcon,
 } from "lucide-react";
 
@@ -17,6 +18,7 @@ export const Icons = {
   chevronRight: ChevronRight,
   spinner: Loader2,
   pizza: Pizza,
+  accessibility: Accessibility,
   gitHub: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"
