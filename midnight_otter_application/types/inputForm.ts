@@ -13,3 +13,15 @@ export type InputAuthenticationDataType = {
 export type SubtitleInputTextDataType = {
   text?: string;
 };
+
+export type InputFormDataType = {
+  type: string;
+  id: string;
+  className: string;
+  placeholder: string;
+  autoCapitalize: string;
+  autoComplete: string;
+  autoCorrect: string;
+  disabled?: boolean;
+  verify?: boolean;
+};

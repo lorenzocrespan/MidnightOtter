@@ -1,26 +1,57 @@
+"use client";
+import * as React from "react";
+// React components imports
 import { Icons } from "@/components/baseComponents/icons";
-import { pushFileToIPFS, getFileFromIPFS } from "@/services/infura";
+import { getFileFromIPFS } from "@/services/infura";
+import { debugConsole } from "@/services/debugConsole";
+
+import { FormProvider, useForm } from "react-hook-form";
+import { searchFormConfig } from "@/config/searchFormConfig";
+import { IdentityInput } from "@/components/baseComponents/inputs/hashInput";
+import { SubtitleInputText } from "@/components/baseComponents/inputs/subtitleInputText";
+interface SearchDataProps {
+  buttonTitle: string;
+}
 
 export default function Page() {
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+
+  const methods = useForm();
+  const {
+    handleSubmit,
+    formState: { errors },
+  } = methods;
+
+  async function onSubmit (data: { [key: string]: string }) {
+    console.log(data);
+    setIsLoading(true);
+    const fileFromIPFS = await getFileFromIPFS({ Hash: data.hash });
+    console.log(fileFromIPFS);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
+  };
+
   return (
     <div className="flex flex-col items-center gap-4 p-4">
-      <form>
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Icons.logo className="h-5 w-5 text-gray-400" />
+      <FormProvider {...methods}>
+        <form>
+          <div className="grid gap-3">
+            <IdentityInput {...searchFormConfig.hash} disabled={isLoading} />
+            {errors.hash && (
+              <SubtitleInputText text={errors.hash.message?.toString()} />
+            )}
+            <button
+              type="button"
+              className="my-4 w-full rounded-md py-2 text-sm text-white outline outline-1 outline-slate-400 hover:bg-gray-800"
+              onClick={handleSubmit(onSubmit)}
+              disabled={isLoading}
+            >
+              Ricerca ...
+            </button>
           </div>
-          <input
-            type="search"
-            id="default-search"
-            className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-4 ps-10 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-            placeholder="Search Mockups, Logos..."
-            required
-          />
-        </div>
-      </form>
-      <button type="submit" className="mt-3 w-auto rounded-lg border-2 p-2">
-        Search
-      </button>
+        </form>
+      </FormProvider>
     </div>
   );
 }
