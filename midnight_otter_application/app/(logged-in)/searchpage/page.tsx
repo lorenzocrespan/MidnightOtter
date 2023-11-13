@@ -1,7 +1,7 @@
 "use client";
 import * as React from "react";
 // React components imports
-import { getFileFromIPFS } from "@/services/infura";
+import { getPdfFromIPFS } from "@/services/infura";
 
 import { FormProvider, set, useForm } from "react-hook-form";
 import { searchFormConfig } from "@/config/searchFormConfig";
@@ -26,8 +26,9 @@ export default function Page() {
   async function onSubmit(data: { [key: string]: string }) {
     console.log(data);
     setIsLoading(true);
-    const fileFromIPFS = await getFileFromIPFS({ Hash: data.hash });
-    console.log("file:", fileFromIPFS);
+    const fileFromIPFS = await getPdfFromIPFS( data.hash );
+    // wait for the file to be downloaded
+    console.log("fileFromIPFS:", fileFromIPFS);
     // create a list of file downlodables
     setFiles((prevState: any) => [...prevState, fileFromIPFS]);
     setTimeout(() => {
@@ -58,12 +59,12 @@ export default function Page() {
       <div className="flex flex-col items-center gap-4 p-4">
             Result ricerca:
             {files.map((file: any, idx: any) => {
-              console.log("file:", file);
+              console.log("list file:", file);
               // Create a list of file downlodables
               return (
                 <div key={idx} className="flex flex-col items-center gap-4">
                   <div className="flex flex-col items-center gap-4">
-                    file : {file.hash}
+                    file : {file.name}
                   </div>
                   <div className="flex flex-col items-center gap-4">
                     file.type : 

@@ -1,7 +1,7 @@
 "use client";
 import { useRef, useState } from "react";
 import { Icons } from "@/components/baseComponents/icons";
-import { pushFileToIPFS, getFileFromIPFS } from "@/services/infura";
+import { pushPdfToIPFS } from "@/services/infura";
 
 export default function Page() {
   const [dragActive, setDragActive] = useState<boolean>(false);
@@ -21,19 +21,13 @@ export default function Page() {
 
   async function handleSubmitFile(e: any) {
     if (files.length === 0) {
-      console.log("Get file from IPFS");
-      // Get file from IPFS
-      const fileFromIPFS = await getFileFromIPFS({
-        Hash: "QmfKjWn4vX4nWAvNqTDxUCEUi1WqdmAQ4NAisdxyPAnSKY",
-      });
-      console.log(fileFromIPFS);
       // ERROR: No files added
     } else {
       console.log("Submitting files");
       // Upload files to IPFS
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        const fileHash = await pushFileToIPFS(file);
+        const fileHash = await pushPdfToIPFS(file);
         console.log(fileHash);
       }
     }
