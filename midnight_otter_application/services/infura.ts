@@ -39,12 +39,10 @@ export const getFileFromIPFS = async (hash: any) => {
   );
   console.log(res);
   const blob = await res.blob();
+  // print data to console
+  console.log(blob);
   // Save file to local storage
   const url = URL.createObjectURL(blob);
-  console.log(url);
-  // download file from url
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "file.pdf";
-  link.click();
+  const dataFetch = { url: url, size: blob.size, name: hash.Hash };
+  return dataFetch;
 };
