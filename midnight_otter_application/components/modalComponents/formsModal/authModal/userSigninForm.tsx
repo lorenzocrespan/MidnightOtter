@@ -10,6 +10,10 @@ import { PasswordInput } from "@/components/baseComponents/inputs/passwordInput"
 import { AbsoluteSpinner } from "@/components/pageComponents/spinnerLoadingComponent";
 import { useRouter } from "next/navigation";
 
+import { useReducer } from "react";
+import { connectWallet } from "@/services/metamaskUtils";
+import { MetaMaskReducer, metamaskState } from "@/services/metamaskProvider";
+
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function UserSigninForm({ className, ...props }: UserAuthFormProps) {
@@ -22,14 +26,26 @@ export function UserSigninForm({ className, ...props }: UserAuthFormProps) {
     formState: { errors },
   } = methods;
 
-  const onSubmit = (data: { [key: string]: string }) => {
-    console.log(data);
+  const onSubmit = async (data: { [key: string]: string }) => {
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
+    console.log(data);
+    const wallet = await connectWallet();
+    if (wallet) {
+      console.log(wallet);
+      dispatch({ type: "CONNECT", account: wallet });
       router.push("/homepage");
-    }, 2000);
+      setIsLoading(false);
+    }
   };
+
+  const initialState: metamaskState = {
+    account: "",
+    network: "",
+    isConnected: false,
+    balance: 0,
+  };
+
+  const [state, dispatch] = useReducer(MetaMaskReducer, initialState);
 
   return (
     <div className="flex flex-col gap-5" {...props}>

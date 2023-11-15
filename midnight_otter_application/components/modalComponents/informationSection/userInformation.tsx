@@ -1,4 +1,12 @@
+"use client";
+
+import * as React from "react";
+import { useContext } from "react";
+import { DataContext } from "@/context/PostContest";
+
 export function UserInformation() {
+  const { state, changeAccount } = useContext(DataContext);
+  console.log(state);
   return (
     <div className="flex h-auto justify-between rounded-md p-12">
       <div className="flex flex-row gap-16">
@@ -16,7 +24,7 @@ export function UserInformation() {
             <tr>
               <td className="text-xl">Utente:</td>
               <td className="cursor-pointer px-5 duration-500 ease-out hover:text-amber-500">
-                NomeUtente CognomeUtente
+                {state.account}
               </td>
             </tr>
             <tr>
@@ -35,7 +43,7 @@ export function UserInformation() {
             <tr>
               <td className="text-xl">Rete attuale: </td>
               <td className="cursor-pointer px-5 duration-500 ease-out hover:text-amber-500">
-                IdentificativoNetwork
+                 
               </td>
             </tr>
             <tr>

@@ -25,10 +25,11 @@
   },
   "include": [
     "next-env.d.ts",
+    "metamaskTypes.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
     "components/baseComponents/canvas/mesh.tsx"
-, "scripts/deploy.js", "services/infura.ts"  ],
+, "scripts/deploy.js", "services/infura.ts", "context/PostContest.js"  ],
   "exclude": ["node_modules"]
 }
