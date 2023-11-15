@@ -9,14 +9,13 @@ import { SubtitleInputText } from "@/components/baseComponents/inputs/subtitleIn
 import { PasswordInput } from "@/components/baseComponents/inputs/passwordInput";
 import { AbsoluteSpinner } from "@/components/pageComponents/spinnerLoadingComponent";
 import { useRouter } from "next/navigation";
-
-import { useReducer } from "react";
 import { connectWallet } from "@/services/metamaskUtils";
-import { MetaMaskReducer, metamaskState } from "@/services/metamaskProvider";
+import { useMetamaskTaskContext } from "@/context/metamaskContext";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function UserSigninForm({ className, ...props }: UserAuthFormProps) {
+  const dispatch = useMetamaskTaskContext();
   const router = useRouter();
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
@@ -32,20 +31,13 @@ export function UserSigninForm({ className, ...props }: UserAuthFormProps) {
     const wallet = await connectWallet();
     if (wallet) {
       console.log(wallet);
-      dispatch({ type: "CONNECT", account: wallet });
+      dispatch
+        ? dispatch({ type: "CONNECT", account: wallet })
+        : console.log("dispatch not found");
       router.push("/homepage");
       setIsLoading(false);
     }
   };
-
-  const initialState: metamaskState = {
-    account: "",
-    network: "",
-    isConnected: false,
-    balance: 0,
-  };
-
-  const [state, dispatch] = useReducer(MetaMaskReducer, initialState);
 
   return (
     <div className="flex flex-col gap-5" {...props}>

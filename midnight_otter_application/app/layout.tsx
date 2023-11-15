@@ -1,5 +1,5 @@
 // Tailwind CSS imports
-import { DataProvider } from "@/context/PostContest";
+import { MetamaskProvider } from "@/context/metamaskContext";
 import "./globals.css";
 // Types imports
 import { siteConfig } from "@/config/siteConfig";
@@ -48,7 +48,7 @@ export default function BaseLayout({ children, session }: DefaultLayoutProps) {
     <html lang="it" suppressHydrationWarning>
       <head />
       <body className="bg-background gbx-installed min-h-screen antialiased">
-        <DataProvider>{children}</DataProvider>
+        <MetamaskProvider>{children}</MetamaskProvider>
       </body>
     </html>
   );

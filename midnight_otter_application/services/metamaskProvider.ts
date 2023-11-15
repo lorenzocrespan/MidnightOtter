@@ -5,8 +5,6 @@
  *    retrieve the account and network information.
  */
 
-import React from "react";
-
 /**
  *  Interface to define the MetaMask state.
  *
@@ -23,7 +21,7 @@ export interface metamaskState {
   isConnected: boolean;
 }
 
-const initialState: metamaskState = {
+export const initialState: metamaskState = {
   account: "",
   network: "",
   isConnected: false,
@@ -34,7 +32,7 @@ const initialState: metamaskState = {
  *  Type to define the MetaMask action.
  *
  */
-export type MetaMaskAction =
+export type metamaskAction =
   | {
       type: "CONNECT";
       account: string;
@@ -53,9 +51,9 @@ export type MetaMaskAction =
  * @param action
  * @returns
  */
-export function MetaMaskReducer(
+export function metamaskReducer(
   state: metamaskState,
-  action: MetaMaskAction
+  action: metamaskAction
 ): metamaskState {
   switch (action.type) {
     case "CONNECT":

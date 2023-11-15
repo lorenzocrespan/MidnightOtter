@@ -1,11 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { useContext } from "react";
-import { DataContext } from "@/context/PostContest";
+import { useMetamaskContext } from "@/context/metamaskContext";
 
 export function UserInformation() {
-  const { state, changeAccount } = useContext(DataContext);
+  const state = useMetamaskContext();
   console.log(state);
   return (
     <div className="flex h-auto justify-between rounded-md p-12">
@@ -24,7 +23,7 @@ export function UserInformation() {
             <tr>
               <td className="text-xl">Utente:</td>
               <td className="cursor-pointer px-5 duration-500 ease-out hover:text-amber-500">
-                {state.account}
+                {state?.account}
               </td>
             </tr>
             <tr>
