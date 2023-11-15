@@ -1,5 +1,5 @@
 // Tailwind CSS imports
-import { MetamaskProvider } from "@/context/metamaskStateContext";
+import { MetamaskProvider } from "@/context/metamaskContext";
 import "./globals.css";
 // Types imports
 import { siteConfig } from "@/config/siteConfig";

@@ -33,6 +33,6 @@ export const loggedPageRightConfig: BaseNavbarType = {
       title: "Logout",
       href: "/",
       disabled: false,
-    }
+    },
   ],
 };

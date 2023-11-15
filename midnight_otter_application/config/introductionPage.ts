@@ -41,13 +41,3 @@ export const introductionPageRightConfig: BaseNavbarType = {
     },
   ],
 };
-
-export const loggedPageRightConfig: BaseNavbarType = {
-  mainNav: [
-    {
-      title: "Logout",
-      href: "/",
-      disabled: false,
-    }
-  ],
-};

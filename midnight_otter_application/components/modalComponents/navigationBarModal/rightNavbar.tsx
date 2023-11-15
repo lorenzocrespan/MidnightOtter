@@ -6,6 +6,8 @@ import { useSelectedLayoutSegment } from "next/navigation";
 
 import { MainNavItem } from "@/types";
 import { cn } from "@/lib/utils";
+import { useMetamaskTaskContext } from "@/context/metamaskContext";
+import { useRouter } from "next/navigation";
 
 interface MainNavProps {
   items?: MainNavItem[];
@@ -14,6 +16,8 @@ interface MainNavProps {
 
 export function LogNav({ items, children }: MainNavProps) {
   const segment = useSelectedLayoutSegment();
+  const dispatch = useMetamaskTaskContext();
+  const router = useRouter();
 
   return (
     <div className="flex gap-6 md:gap-10">
@@ -23,6 +27,17 @@ export function LogNav({ items, children }: MainNavProps) {
             <Link
               key={index}
               href={item.disabled ? "#" : item.href}
+              {...(item.title === "Logout"
+                ? {
+                    onClick: (e) => {
+                      e.preventDefault();
+                      dispatch
+                        ? dispatch({ type: "DISCONNECT" })
+                        : console.log("dispatch not found");
+                      router.push("/");
+                    },
+                  }
+                : {})}
               className={cn(
                 "hover:text-foreground/80 flex items-center text-lg font-medium transition-colors sm:text-sm",
                 item.href.startsWith(`/${segment}`)
