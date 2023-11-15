@@ -10,7 +10,7 @@ import { PasswordInput } from "@/components/baseComponents/inputs/passwordInput"
 import { AbsoluteSpinner } from "@/components/pageComponents/spinnerLoadingComponent";
 import { useRouter } from "next/navigation";
 import { connectWallet } from "@/services/metamaskUtils";
-import { useMetamaskTaskContext } from "@/context/metamaskContext";
+import { useMetamaskTaskContext } from "@/context/metamaskStateContext";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 

@@ -1,10 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { useMetamaskContext } from "@/context/metamaskContext";
+import { usemetamaskStateContext } from "@/context/metamaskContext";
 
 export function UserInformation() {
-  const state = useMetamaskContext();
+  const state = usemetamaskStateContext();
   console.log(state);
   return (
     <div className="flex h-auto justify-between rounded-md p-12">
