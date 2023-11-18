@@ -28,6 +28,9 @@ import { InputFormDataType } from "@/types/inputForm";
  * 
  *  @field numberCase, Number of the case.
  *  @field nameCase, Name of the case.
+ * 
+ *  @field nameObject, Name of the object of the case.
+ *  @field descriptionObject, Description of the object of the case.
  *
  */
 export const addCasesFormConfig: { [key: string]: InputFormDataType } = {
@@ -45,6 +48,22 @@ export const addCasesFormConfig: { [key: string]: InputFormDataType } = {
     className:
       "w-full rounded-md p-2 text-sm text-slate-900 outline outline-1 outline-slate-400",
     placeholder: "Name",
+    autoCapitalize: "off",
+  },
+  nameObject: {
+    type: "text",
+    id: "nameObject",
+    className:
+      "w-full rounded-md p-2 text-sm text-slate-900 outline outline-1 outline-slate-400",
+    placeholder: "Name",
+    autoCapitalize: "off",
+  },
+  descriptionObject: {
+    type: "textarea",
+    id: "descriptionObject",
+    className:
+      "w-full rounded-md p-2 text-sm text-slate-900 outline outline-1 outline-slate-400",
+    placeholder: "Description",
     autoCapitalize: "off",
   },
 };

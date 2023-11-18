@@ -22,6 +22,9 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         uint256 numberCase;
         string nameCase;
         // string nameCreator;
+        // Properties of object of the case
+        string nameObject;
+        string descriptionObject;
         // List of URI for the expert reports
         string[] expertReports;
         // URI for the chain of custody

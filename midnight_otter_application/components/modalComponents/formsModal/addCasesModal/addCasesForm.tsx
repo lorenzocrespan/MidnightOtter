@@ -29,18 +29,55 @@ export function AddCasesForm({ className, ...props }: FormProps) {
   };
 
   return (
-    <div className="flex flex-col gap-5" {...props}>
+    <div
+      className="flex h-auto flex-col justify-between gap-5 rounded-md p-12"
+      {...props}
+    >
       {isLoading && <AbsoluteSpinner />}
       <FormProvider {...methods}>
-        <form>
-          <div className="grid gap-3">
+        <form className="flex flex-col gap-5">
+          <div className="flex flex-col gap-2">
+            <h1 className="text-3xl font-bold">Informazioni caso</h1>
+            <p className="text-xl"> Inserisci le informazioni del caso.</p>
+            <h3 className="text-xl font-bold">Nome del caso:</h3>
             <CaseInput {...addCasesFormConfig.nameCase} disabled={isLoading} />
             {errors.nameCase && (
               <SubtitleInputText text={errors.nameCase.message?.toString()} />
             )}
-            <CaseInput {...addCasesFormConfig.numberCase} disabled={isLoading} />
+            <h3 className="text-xl font-bold">
+              Identificativo numerico del caso:
+            </h3>
+            <CaseInput
+              {...addCasesFormConfig.numberCase}
+              disabled={isLoading}
+            />
             {errors.numberCase && (
               <SubtitleInputText text={errors.numberCase.message?.toString()} />
+            )}
+          </div>
+          <div className="flex flex-col gap-2">
+            <h1 className="text-3xl font-bold">Informazioni caso</h1>
+            <p className="text-xl">
+              {" "}
+              Inserisci le informazioni sull'oggetto del caso.
+            </p>
+            <h3 className="text-xl font-bold">Identificativo dell'oggetto:</h3>
+            <CaseInput
+              {...addCasesFormConfig.nameObject}
+              disabled={isLoading}
+            />
+            {errors.nameObject && (
+              <SubtitleInputText text={errors.nameObject.message?.toString()} />
+            )}
+            <h3 className="text-xl font-bold">Descrizione dell'oggetto:</h3>
+            <CaseInput
+              {...addCasesFormConfig.descriptionObject}
+              disabled={isLoading}
+            />
+            {errors.descriptionObject && (
+              <SubtitleInputText
+                text={errors.descriptionObject.message?.toString()}
+              />
             )}
           </div>
         </form>

@@ -25,7 +25,7 @@ export function CaseInput(caseInputProps: InputFormDataType) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
-  return (
+  return caseInputProps.type !== "textarea" ? (
     <input
       {...register(caseInputProps.id, {
         required: firstLetterUppercase(caseInputProps.id) + " is required",
@@ -35,6 +35,21 @@ export function CaseInput(caseInputProps: InputFormDataType) {
         },
       })}
       type={caseInputProps.type}
+      id={caseInputProps.id}
+      className="w-full rounded-md p-2 text-sm text-slate-900 outline outline-1 outline-slate-400"
+      placeholder={caseInputProps.placeholder}
+      autoCapitalize={caseInputProps.autoCapitalize}
+      disabled={caseInputProps.disabled}
+    />
+  ) : (
+    <textarea
+      {...register(caseInputProps.id, {
+        required: firstLetterUppercase(caseInputProps.id) + " is required",
+        pattern: {
+          value: switchPatternApply(caseInputProps.type),
+          message: "Invalid input",
+        },
+      })}
       id={caseInputProps.id}
       className="w-full rounded-md p-2 text-sm text-slate-900 outline outline-1 outline-slate-400"
       placeholder={caseInputProps.placeholder}
