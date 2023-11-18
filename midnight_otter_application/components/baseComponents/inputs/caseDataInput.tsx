@@ -14,6 +14,8 @@ export function CaseInput(caseInputProps: InputFormDataType) {
         return /^[a-zA-Z]+$/;
       case "hash":
         return /^[a-zA-Z0-9]+$/;
+      case "number":
+        return /^[0-9]+$/;
       default:
         return /^[a-zA-Z]+$/;
     }
@@ -28,7 +30,7 @@ export function CaseInput(caseInputProps: InputFormDataType) {
       {...register(caseInputProps.id, {
         required: firstLetterUppercase(caseInputProps.id) + " is required",
         pattern: {
-          value: switchPatternApply(caseInputProps.id),
+          value: switchPatternApply(caseInputProps.type),
           message: "Invalid input",
         },
       })}

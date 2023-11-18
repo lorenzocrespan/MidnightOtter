@@ -36,7 +36,7 @@ export const addCasesFormConfig: { [key: string]: InputFormDataType } = {
     id: "numberCase",
     className:
       "w-full rounded-md p-2 text-sm text-slate-900 outline outline-1 outline-slate-400",
-    placeholder: "QmfKjWn4vX4nWAvNqTDxUCEUi1WqdmAQ4NAisdxyPAnSKY",
+    placeholder: "2023000001",
     autoCapitalize: "off",
   },
   nameCase: {

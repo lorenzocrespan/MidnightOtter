@@ -38,14 +38,10 @@ export function AddCasesForm({ className, ...props }: FormProps) {
             {errors.nameCase && (
               <SubtitleInputText text={errors.nameCase.message?.toString()} />
             )}
-            <button
-              type="button"
-              className="my-4 w-full rounded-md py-2 text-sm text-white outline outline-1 outline-slate-400 hover:bg-gray-800"
-              onClick={handleSubmit(onSubmit)}
-              disabled={isLoading}
-            >
-              Carica
-            </button>
+            <CaseInput {...addCasesFormConfig.numberCase} disabled={isLoading} />
+            {errors.numberCase && (
+              <SubtitleInputText text={errors.numberCase.message?.toString()} />
+            )}
           </div>
         </form>
       </FormProvider>
@@ -54,6 +50,14 @@ export function AddCasesForm({ className, ...props }: FormProps) {
           <span className="w-full border-t border-slate-300" />
         </div>
       </div>
+      <button
+        type="button"
+        className="my-4 w-full rounded-md py-2 text-sm text-white outline outline-1 outline-slate-400 hover:bg-gray-800"
+        onClick={handleSubmit(onSubmit)}
+        disabled={isLoading}
+      >
+        Carica
+      </button>
     </div>
   );
 }
