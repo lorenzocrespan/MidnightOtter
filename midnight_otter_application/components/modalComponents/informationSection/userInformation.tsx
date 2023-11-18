@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { usemetamaskStateContext } from "@/context/metamaskContext";
 
 export function UserInformation() {
@@ -42,13 +41,13 @@ export function UserInformation() {
             <tr>
               <td className="text-xl">Rete attuale: </td>
               <td className="cursor-pointer px-5 duration-500 ease-out hover:text-amber-500">
-                 
+                {state?.network}
               </td>
             </tr>
             <tr>
               <td className="text-xl">Saldo per operazioni: </td>
               <td className="cursor-pointer px-5 duration-500 ease-out hover:text-amber-500">
-                Saldo ETH
+                {state?.balance}
               </td>
             </tr>
             <tr>

@@ -9,7 +9,7 @@ import { SubtitleInputText } from "@/components/baseComponents/inputs/subtitleIn
 import { PasswordInput } from "@/components/baseComponents/inputs/passwordInput";
 import { AbsoluteSpinner } from "@/components/pageComponents/spinnerLoadingComponent";
 import { useRouter } from "next/navigation";
-import { connectWallet } from "@/services/metamaskUtils";
+import { connectMetamask } from "@/services/metamaskUtils";
 import { useMetamaskTaskContext } from "@/context/metamaskContext";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
@@ -28,11 +28,11 @@ export function UserSigninForm({ className, ...props }: UserAuthFormProps) {
   const onSubmit = async (data: { [key: string]: string }) => {
     setIsLoading(true);
     console.log(data);
-    const wallet = await connectWallet();
+    const wallet = await connectMetamask();
     if (wallet) {
       console.log(wallet);
       dispatch
-        ? dispatch({ type: "CONNECT", account: wallet })
+        ? dispatch({ type: "CONNECT", account: wallet.account, network: wallet.network, balance: wallet.balance })
         : console.log("dispatch not found");
       router.push("/homepage");
       setIsLoading(false);

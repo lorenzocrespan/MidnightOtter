@@ -36,6 +36,8 @@ export type metamaskAction =
   | {
       type: "CONNECT";
       account: string;
+      network: string;
+      balance: number;
     }
   | {
       type: "DISCONNECT";
@@ -61,6 +63,8 @@ export function metamaskReducer(
       return {
         ...state,
         account: action.account,
+        network: action.network,
+        balance: action.balance,
         isConnected: true,
       };
     case "DISCONNECT":
@@ -68,6 +72,8 @@ export function metamaskReducer(
       return {
         ...state,
         account: "",
+        network: "",
+        balance: 0,
         isConnected: false,
       };
     default:
