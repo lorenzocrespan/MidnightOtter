@@ -1,7 +1,7 @@
 import { useFormContext } from "react-hook-form";
 import { InputFormDataType } from "@/types/inputForm";
 
-export function HashInput(hashInputProps: InputFormDataType) {
+export function CaseInput(caseInputProps: InputFormDataType) {
   const { register } = useFormContext();
 
   const switchPatternApply = (type: string) => {
@@ -25,19 +25,19 @@ export function HashInput(hashInputProps: InputFormDataType) {
 
   return (
     <input
-      {...register(hashInputProps.id, {
-        required: firstLetterUppercase(hashInputProps.id) + " is required",
+      {...register(caseInputProps.id, {
+        required: firstLetterUppercase(caseInputProps.id) + " is required",
         pattern: {
-          value: switchPatternApply(hashInputProps.id),
+          value: switchPatternApply(caseInputProps.id),
           message: "Invalid input",
         },
       })}
-      type={hashInputProps.type}
-      id={hashInputProps.id}
+      type={caseInputProps.type}
+      id={caseInputProps.id}
       className="w-full rounded-md p-2 text-sm text-slate-900 outline outline-1 outline-slate-400"
-      placeholder={hashInputProps.placeholder}
-      autoCapitalize={hashInputProps.autoCapitalize}
-      disabled={hashInputProps.disabled}
+      placeholder={caseInputProps.placeholder}
+      autoCapitalize={caseInputProps.autoCapitalize}
+      disabled={caseInputProps.disabled}
     />
   );
 }

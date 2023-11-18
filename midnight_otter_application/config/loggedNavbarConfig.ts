@@ -21,7 +21,7 @@ export const loggedPageLeftConfig: BaseNavbarType = {
     },
     {
       title: "Sezione 4",
-      href: "/homepage/#Sezione4",
+      href: "/uploadCasesPage",
       disabled: false,
     },
   ],

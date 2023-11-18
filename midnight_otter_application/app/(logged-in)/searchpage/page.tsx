@@ -3,14 +3,10 @@ import * as React from "react";
 // React components imports
 import { getPdfFromIPFS } from "@/services/infura";
 
-import { FormProvider, set, useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { searchFormConfig } from "@/config/searchFormConfig";
-import { IdentityInput } from "@/components/baseComponents/inputs/hashInput";
+import { HashInput } from "@/components/baseComponents/inputs/hashInput";
 import { SubtitleInputText } from "@/components/baseComponents/inputs/subtitleInputText";
-
-interface SearchDataProps {
-  buttonTitle: string;
-}
 
 export default function Page() {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -41,7 +37,7 @@ export default function Page() {
       <FormProvider {...methods}>
         <form className="flex min-w-full flex-col items-center  gap-4">
           <div className="flex w-1/3 flex-col items-center gap-4">
-            <IdentityInput {...searchFormConfig.hash} disabled={isLoading} />
+            <HashInput {...searchFormConfig.hash} disabled={isLoading} />
             {errors.hash && (
               <SubtitleInputText text={errors.hash.message?.toString()} />
             )}
