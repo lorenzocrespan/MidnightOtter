@@ -6,38 +6,35 @@ import { addCasesFormConfig } from "@/config/addCasesFormConfig";
 import { FormProvider, useForm } from "react-hook-form";
 import { SubtitleInputText } from "@/components/baseComponents/inputs/subtitleInputText";
 import { AbsoluteSpinner } from "@/components/pageComponents/spinnerLoadingComponent";
-import { useRouter } from "next/navigation";
-import Web3, { ContractAbi } from "web3";
-import { BrowserProvider, ethers, JsonRpcSigner } from "ethers";
+import {
+  getContract,
+  sendTransaction,
+} from "@/services/midnightOtterSmartContract";
 
 interface FormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
+/**
+ *  Un form per il trattamento dei reperti si compone delle seguenti informazioni:
+ *  - Case Number
+ *  - Submitting Officer
+ *  - Offense
+ *  - Victim
+ *  - Suspect
+ *  - Date/Time Seized
+ *  - Location of Seizure
+ *  Per ogni oggetto si delineano le seguenti informazioni:
+ *  - Object Number
+ *  - Quantity
+ *  - Description
+ *  La catena di un reperto si compone delle seguenti informazioni:
+ *  - Object Number
+ *  - Date/Time
+ *  - Released by
+ *  - Received by
+ *  - Comments/Location
+ */
+
 export function AddCasesForm({ className, ...props }: FormProps) {
-  // Load ABI and contract address
-  const [abi, setAbi] = React.useState<ContractAbi>([]);
-  const [contractAddress, setContractAddress] = React.useState<string>("");
-
-  React.useEffect(() => {
-    const loadAbi = async () => {
-      // Get ABI from public/smartsContract.json
-      const response = await fetch("/smartcontract.json");
-      const data = await response.json();
-      console.log("ABI: ", data.abi);
-      setAbi(data.abi);
-    };
-    loadAbi();
-  }, []);
-
-  React.useEffect(() => {
-    const loadContractAddress = async () => {
-      // Hardcoded contract address
-      const address = "0x1bf296B7F9B19DdA530bAA8D15d8D840e1f62209";
-      setContractAddress(address);
-      console.log("Contract address: ", address);
-    };
-    loadContractAddress();
-  }, []);
-  const router = useRouter();
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   const methods = useForm();
@@ -51,26 +48,14 @@ export function AddCasesForm({ className, ...props }: FormProps) {
   }) => {
     setIsLoading(true);
     console.log(data);
-    const provider = new ethers.BrowserProvider(window.ethereum);
-    await provider.send("eth_requestAccounts", []);
-    const signer = await provider.getSigner();
-
-    console.log("Block:", await provider.getBlockNumber());
-
-    const contract = new ethers.Contract(contractAddress, abi, provider) as any;
-
-    const daiWithSigner = contract.connect(signer);
-
+    const contract = await getContract();
     // Add empty arry to data object in a new key
     data["expertReports"] = [];
-
-    // const tx = await daiWithSigner.unsafeMint(
-    //   "0x1bf296B7F9B19DdA530bAA8D15d8D840e1f62209",
-    //   data
-    // );
-
-    // console.log("Transaction: ", tx);
-
+    const tx = await sendTransaction(contract, "unsafeMint", [
+      "0x1bf296B7F9B19DdA530bAA8D15d8D840e1f62209",
+      data,
+    ]);
+    console.log("Transaction: ", tx);
     // Send transaction to the smart contract
     const response = await contract.getActualTokenId();
     console.log("Response: ", response);

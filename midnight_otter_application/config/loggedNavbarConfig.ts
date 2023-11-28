@@ -10,6 +10,12 @@ export const loggedPageLeftConfig: BaseNavbarType = {
       disabled: false,
     },
     {
+      title: "Upload cases exhibit",
+      // title: "Caricamento reperti",
+      href: "/uploadCasesPage",
+      disabled: false,
+    },
+    {
       title: "Upload page",
       href: "/uploadpage",
       disabled: false,
@@ -17,11 +23,6 @@ export const loggedPageLeftConfig: BaseNavbarType = {
     {
       title: "Search page",
       href: "/searchpage",
-      disabled: false,
-    },
-    {
-      title: "Sezione 4",
-      href: "/uploadCasesPage",
       disabled: false,
     },
   ],
