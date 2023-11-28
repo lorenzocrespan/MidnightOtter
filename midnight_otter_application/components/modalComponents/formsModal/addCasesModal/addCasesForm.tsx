@@ -7,10 +7,36 @@ import { FormProvider, useForm } from "react-hook-form";
 import { SubtitleInputText } from "@/components/baseComponents/inputs/subtitleInputText";
 import { AbsoluteSpinner } from "@/components/pageComponents/spinnerLoadingComponent";
 import { useRouter } from "next/navigation";
+import Web3, { ContractAbi } from "web3";
+import { BrowserProvider, ethers, JsonRpcSigner } from "ethers";
 
 interface FormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function AddCasesForm({ className, ...props }: FormProps) {
+  // Load ABI and contract address
+  const [abi, setAbi] = React.useState<ContractAbi>([]);
+  const [contractAddress, setContractAddress] = React.useState<string>("");
+
+  React.useEffect(() => {
+    const loadAbi = async () => {
+      // Get ABI from public/smartsContract.json
+      const response = await fetch("/smartcontract.json");
+      const data = await response.json();
+      console.log("ABI: ", data.abi);
+      setAbi(data.abi);
+    };
+    loadAbi();
+  }, []);
+
+  React.useEffect(() => {
+    const loadContractAddress = async () => {
+      // Hardcoded contract address
+      const address = "0x1bf296B7F9B19DdA530bAA8D15d8D840e1f62209";
+      setContractAddress(address);
+      console.log("Contract address: ", address);
+    };
+    loadContractAddress();
+  }, []);
   const router = useRouter();
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
@@ -20,9 +46,34 @@ export function AddCasesForm({ className, ...props }: FormProps) {
     formState: { errors },
   } = methods;
 
-  const onSubmit = async (data: { [key: string]: string }) => {
+  const onSubmit = async (data: {
+    [key: string]: number | string | string[];
+  }) => {
     setIsLoading(true);
     console.log(data);
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+    const signer = await provider.getSigner();
+
+    console.log("Block:", await provider.getBlockNumber());
+
+    const contract = new ethers.Contract(contractAddress, abi, provider) as any;
+
+    const daiWithSigner = contract.connect(signer);
+
+    // Add empty arry to data object in a new key
+    data["expertReports"] = [];
+
+    // const tx = await daiWithSigner.unsafeMint(
+    //   "0x1bf296B7F9B19DdA530bAA8D15d8D840e1f62209",
+    //   data
+    // );
+
+    // console.log("Transaction: ", tx);
+
+    // Send transaction to the smart contract
+    const response = await contract.getActualTokenId();
+    console.log("Response: ", response);
     if (true) {
       setIsLoading(false);
     }

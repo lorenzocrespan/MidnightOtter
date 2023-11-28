@@ -50,6 +50,20 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         caseProperties[tokenId] = initialTokenStruct;
     }
 
+    function unsafeMint(
+        address to,
+        Property memory initialTokenStruct
+    ) public {
+         uint256 tokenId = _nextTokenId++;
+         _mint(to, tokenId);
+        caseProperties[tokenId] = initialTokenStruct;
+    }
+
+
+    function getActualTokenId() public view returns (uint256) {
+        return _nextTokenId;
+    }
+
     // The following functions are required to interact with the property of the case.
 
     function getCaseProperties(
