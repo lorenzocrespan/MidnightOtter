@@ -18,7 +18,7 @@ export const loggedPageLeftConfig: BaseNavbarType = {
     {
       title: "List exhibit",
       // title: "Lista reperti",
-      href: "/listExihibitPage",
+      href: "/exihibitPage",
       disabled: false,
     },
     {
