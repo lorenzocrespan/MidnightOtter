@@ -41,31 +41,31 @@ export const getContract = async () => {
 
 /**
  * Function to send a transaction to the smart contract.
- * 
+ *
  * @param contract Contract to send the transaction to.
  * @param func Function to call.
  * @param args Arguments to pass to the function.
  * @returns The transaction receipt.
- * 
+ *
  */
 export const sendTransaction = async (contract: any, func: any, args: any) => {
   console.log("[SMART CONTRACT] Init send transaction");
   const tx = await contract[func](...args);
   const receipt = await tx.wait();
   return receipt;
-}
+};
 
 /**
  * Function to interact with read-only functions of the smart contract.
- * 
+ *
  * @param contract Contract to send the transaction to.
  * @param func Function to call.
  * @param args Arguments to pass to the function.
  * @returns The transaction receipt.
- * 
+ *
  */
 export const callReadOnly = async (contract: any, func: any, args: any) => {
   console.log("[SMART CONTRACT] Init call read only");
   const result = await contract[func](...args);
   return result;
-}
+};
