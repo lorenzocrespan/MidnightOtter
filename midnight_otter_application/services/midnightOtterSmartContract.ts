@@ -9,9 +9,7 @@ import { ethers } from "ethers";
 
 const loadContractABI = async () => {
   // Load the ABI from the ABI file.
-  const response = await fetch("/smartcontract.json");
-  const data = await response.json();
-  console.log("ABI: ", data.abi);
+  const data = require("./smartcontract.json");
   // Return the ABI.
   return data.abi;
 };
@@ -24,6 +22,7 @@ const loadContractAddress = async () => {
 };
 
 export const getContract = async () => {
+  console.log("[SMART CONTRACT] Init get contract");
   // Load the ABI.
   const abi = await loadContractABI();
   // Load the contract address.
@@ -50,10 +49,23 @@ export const getContract = async () => {
  * 
  */
 export const sendTransaction = async (contract: any, func: any, args: any) => {
-    console.log("[SMART CONTRACT] Init send transaction");
+  console.log("[SMART CONTRACT] Init send transaction");
   const tx = await contract[func](...args);
   const receipt = await tx.wait();
   return receipt;
 }
 
-
+/**
+ * Function to interact with read-only functions of the smart contract.
+ * 
+ * @param contract Contract to send the transaction to.
+ * @param func Function to call.
+ * @param args Arguments to pass to the function.
+ * @returns The transaction receipt.
+ * 
+ */
+export const callReadOnly = async (contract: any, func: any, args: any) => {
+  console.log("[SMART CONTRACT] Init call read only");
+  const result = await contract[func](...args);
+  return result;
+}
