@@ -1,10 +1,15 @@
 "use client";
 
-import { usemetamaskStateContext } from "@/context/metamaskContext";
+import { useAccount } from "wagmi";
 
 export function UserInformation() {
-  const state = usemetamaskStateContext();
-  console.log(state);
+
+  const { address, isConnecting, isConnected, isDisconnected } = useAccount();
+
+  console.log(address, isConnecting, isConnected, isDisconnected);
+
+  const state = { account: address, network: "Rinkeby", balance: "0.00" };
+
   return (
     <div className="flex h-auto justify-between rounded-md p-12">
       <div className="flex flex-row gap-16">

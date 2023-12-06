@@ -3,6 +3,7 @@ import { MetamaskProvider } from "@/context/metamaskContext";
 import "./globals.css";
 // Types imports
 import { siteConfig } from "@/config/siteConfig";
+import { Web3Modal } from "@/context/Web3Modal";
 
 // Definition of the DefaultLayoutProps type that is used in the RootLayout function.
 interface DefaultLayoutProps {
@@ -48,7 +49,7 @@ export default function BaseLayout({ children, session }: DefaultLayoutProps) {
     <html lang="it" suppressHydrationWarning>
       <head />
       <body className="bg-background gbx-installed min-h-screen antialiased">
-        <MetamaskProvider>{children}</MetamaskProvider>
+        <Web3Modal>{children}</Web3Modal>
       </body>
     </html>
   );

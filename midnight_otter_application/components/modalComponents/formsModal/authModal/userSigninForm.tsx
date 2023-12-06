@@ -12,12 +12,18 @@ import { useRouter } from "next/navigation";
 import { connectMetamask } from "@/services/metamaskUtils";
 import { useMetamaskTaskContext } from "@/context/metamaskContext";
 
+import { useAccount } from "wagmi";
+import { connect } from "wagmi/actions";
+import { InjectedConnector } from "wagmi/connectors/injected";
+
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function UserSigninForm({ className, ...props }: UserAuthFormProps) {
   const dispatch = useMetamaskTaskContext();
   const router = useRouter();
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+
+  const { isConnected } = useAccount();
 
   const methods = useForm();
   const {
@@ -28,12 +34,20 @@ export function UserSigninForm({ className, ...props }: UserAuthFormProps) {
   const onSubmit = async (data: { [key: string]: string }) => {
     setIsLoading(true);
     console.log(data);
-    const wallet = await connectMetamask();
-    if (wallet) {
-      console.log(wallet);
-      dispatch
-        ? dispatch({ type: "CONNECT", account: wallet.account, network: wallet.network, balance: wallet.balance })
-        : console.log("dispatch not found");
+    console.log("Signing in...", isConnected);
+    if (!isConnected) {
+      connect({
+        connector: new InjectedConnector(),
+      }).then((account) => {
+        if (account) {
+          router.push("/homepage");
+          setIsLoading(false);
+        } else {
+          console.log("Error while connecting to Metamask.");
+          setIsLoading(false);
+        }
+      });
+    } else {
       router.push("/homepage");
       setIsLoading(false);
     }
