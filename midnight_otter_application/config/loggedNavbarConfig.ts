@@ -6,7 +6,7 @@ export const loggedPageLeftConfig: BaseNavbarType = {
   mainNav: [
     {
       title: "Homepage",
-      href: "/homepage",
+      href: "/userMainPage",
       disabled: false,
     },
     {

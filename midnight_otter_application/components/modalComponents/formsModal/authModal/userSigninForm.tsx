@@ -9,7 +9,6 @@ import { SubtitleInputText } from "@/components/baseComponents/inputs/subtitleIn
 import { PasswordInput } from "@/components/baseComponents/inputs/passwordInput";
 import { AbsoluteSpinner } from "@/components/pageComponents/spinnerLoadingComponent";
 import { useRouter } from "next/navigation";
-import { connectMetamask } from "@/services/metamaskUtils";
 
 import { useAccount } from "wagmi";
 import { connect } from "wagmi/actions";
@@ -38,7 +37,7 @@ export function UserSigninForm({ className, ...props }: UserAuthFormProps) {
         connector: new InjectedConnector(),
       }).then((account) => {
         if (account) {
-          router.push("/homepage");
+          router.push("/userMainPage");
           setIsLoading(false);
         } else {
           console.log("Error while connecting to Metamask.");
@@ -46,7 +45,7 @@ export function UserSigninForm({ className, ...props }: UserAuthFormProps) {
         }
       });
     } else {
-      router.push("/homepage");
+      router.push("/userMainPage");
       setIsLoading(false);
     }
   };
