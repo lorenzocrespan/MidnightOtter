@@ -6,10 +6,6 @@ import { addCasesFormConfig } from "@/config/addCasesFormConfig";
 import { FormProvider, useForm } from "react-hook-form";
 import { SubtitleInputText } from "@/components/baseComponents/inputs/subtitleInputText";
 import { AbsoluteSpinner } from "@/components/pageComponents/spinnerLoadingComponent";
-import {
-  getContract,
-  sendTransaction,
-} from "@/services/midnightOtterSmartContract";
 
 interface FormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -48,17 +44,6 @@ export function AddCasesForm({ className, ...props }: FormProps) {
   }) => {
     setIsLoading(true);
     console.log(data);
-    const contract = await getContract();
-    // Add empty arry to data object in a new key
-    data["expertReports"] = [];
-    const tx = await sendTransaction(contract, "unsafeMint", [
-      "0x1bf296B7F9B19DdA530bAA8D15d8D840e1f62209",
-      data,
-    ]);
-    console.log("Transaction: ", tx);
-    // Send transaction to the smart contract
-    const response = await contract.getActualTokenId();
-    console.log("Response: ", response);
     if (true) {
       setIsLoading(false);
     }

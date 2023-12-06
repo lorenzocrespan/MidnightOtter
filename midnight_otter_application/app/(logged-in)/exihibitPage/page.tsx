@@ -4,10 +4,6 @@ import * as React from "react";
 import Link from "next/link";
 // Other imports
 import { ChevronRight } from "lucide-react";
-import {
-  getContract,
-  callReadOnly,
-} from "@/services/midnightOtterSmartContract";
 import { groupedExihibitsCasesType } from "@/types/smartContractType";
 
 export default function Page() {
@@ -30,28 +26,28 @@ export default function Page() {
 
   const loadExihibitByUser = async () => {
     // Get the list of cases owned by the user
-    const contract = await getContract();
-    const response = await callReadOnly(contract, "getOwnerCases", [
-      "0x1bf296B7F9B19DdA530bAA8D15d8D840e1f62209",
-    ]);
+    // const contract = await getContract();
+    // const response = await callReadOnly(contract, "getOwnerCases", [
+    //   "0x1bf296B7F9B19DdA530bAA8D15d8D840e1f62209",
+    // ]);
     // For each case, get the exihibit data and add it to the list
-    const casesData = await Promise.all(
-      response.map(async (item: any) => {
-        const caseData = await callReadOnly(contract, "getCaseProperties", [
-          item,
-        ]);
-        return caseData;
-      })
-    );
-    console.log("[List exihibit by user] Cases data: ", casesData);
-    const resultFormatted = casesData.map((item: any) => {
-      return {
-        name: item[0],
-        number: item[1],
-      };
-    });
-    console.log("[List exihibit by user] Result formatted: ", resultFormatted);
-    return resultFormatted;
+    // const casesData = await Promise.all(
+    //   response.map(async (item: any) => {
+    //     const caseData = await callReadOnly(contract, "getCaseProperties", [
+    //       item,
+    //     ]);
+    //     return caseData;
+    //   })
+    // );
+    // console.log("[List exihibit by user] Cases data: ", casesData);
+    // const resultFormatted = casesData.map((item: any) => {
+    //   return {
+    //     name: item[0],
+    //     number: item[1],
+    //   };
+    // });
+    // console.log("[List exihibit by user] Result formatted: ", resultFormatted);
+    return [];
   };
 
   const groupCasesByProperty = (

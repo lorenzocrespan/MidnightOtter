@@ -10,7 +10,6 @@ import { PasswordInput } from "@/components/baseComponents/inputs/passwordInput"
 import { AbsoluteSpinner } from "@/components/pageComponents/spinnerLoadingComponent";
 import { useRouter } from "next/navigation";
 import { connectMetamask } from "@/services/metamaskUtils";
-import { useMetamaskTaskContext } from "@/context/metamaskContext";
 
 import { useAccount } from "wagmi";
 import { connect } from "wagmi/actions";
@@ -19,7 +18,6 @@ import { InjectedConnector } from "wagmi/connectors/injected";
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function UserSigninForm({ className, ...props }: UserAuthFormProps) {
-  const dispatch = useMetamaskTaskContext();
   const router = useRouter();
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 

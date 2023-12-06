@@ -6,7 +6,6 @@ import { useSelectedLayoutSegment } from "next/navigation";
 
 import { MainNavItem } from "@/types";
 import { cn } from "@/lib/utils";
-import { useMetamaskTaskContext } from "@/context/metamaskContext";
 import { useRouter } from "next/navigation";
 
 interface MainNavProps {
@@ -16,7 +15,6 @@ interface MainNavProps {
 
 export function LogNav({ items, children }: MainNavProps) {
   const segment = useSelectedLayoutSegment();
-  const dispatch = useMetamaskTaskContext();
   const router = useRouter();
 
   return (
@@ -31,9 +29,6 @@ export function LogNav({ items, children }: MainNavProps) {
                 ? {
                     onClick: (e) => {
                       e.preventDefault();
-                      dispatch
-                        ? dispatch({ type: "DISCONNECT" })
-                        : console.log("dispatch not found");
                       router.push("/");
                     },
                   }
