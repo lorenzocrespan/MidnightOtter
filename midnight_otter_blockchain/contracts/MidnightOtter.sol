@@ -98,6 +98,7 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         _grantRole(MINTER_ROLE, minter);
     }
 
+    // Valid: [12,"pippo",0,"pippo",11,1,1,"pippo","pippo",111,0,[""],[10,"a","a","transazione"]]
     function safeMint(
         address to,
         Exihibit memory initialTokenStruct
@@ -105,6 +106,7 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         uint256 tokenId = _nextTokenId++;
         _safeMint(to, tokenId);
         caseProperties[tokenId] = initialTokenStruct;
+        
     }
 
     function unsafeMint(address to, Exihibit memory initialTokenStruct) public {
@@ -224,6 +226,23 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
     }
 
     // The following functions are required to manage the chain of custody of the Exihibit of the case.
+
+    function addChainCustody(
+        uint256 tokenId,
+        string memory releasedBy,
+        string memory receivedBy,
+        string memory action
+    ) public onlyRole(MINTER_ROLE) {
+        // Check if the sender is the owner of the exihibit or a shared user
+        require(
+            ownerOf(tokenId) == msg.sender || shareOf(tokenId, msg.sender),
+            "MidnightOtter: Only the owner of the case can add an event to the chain of custody."
+        );
+        // Add the event to the list of events
+        caseProperties[tokenId].chainCustody.push(
+            ChainCustody(block.timestamp, releasedBy, receivedBy, action)
+        );
+    }
 
     // The following functions are overrides required by Solidity.
 
