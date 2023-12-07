@@ -1,38 +1,34 @@
 "use client";
 
-import * as React from "react";
 import Link from "next/link";
 import { useSelectedLayoutSegment } from "next/navigation";
 
 import { MainNavItem } from "@/types";
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
+import { Icons } from "@/components/baseComponents/icons";
+import { siteConfig } from "@/config/siteConfig";
 
 interface MainNavProps {
   items?: MainNavItem[];
-  children?: React.ReactNode;
 }
 
-export function LogNav({ items, children }: MainNavProps) {
+export function MainNav({ items }: MainNavProps) {
   const segment = useSelectedLayoutSegment();
-  const router = useRouter();
 
   return (
     <div className="flex gap-6 md:gap-10">
+      <Link href="/" className="hidden items-center space-x-2 md:flex">
+        <Icons.logo />
+        <span className="hidden font-bold sm:inline-block">
+          {siteConfig.name}
+        </span>
+      </Link>
       {items?.length ? (
         <nav className="hidden gap-6 md:flex">
           {items?.map((item, index) => (
             <Link
               key={index}
               href={item.disabled ? "#" : item.href}
-              {...(item.title === "Logout"
-                ? {
-                    onClick: (e) => {
-                      e.preventDefault();
-                      router.push("/");
-                    },
-                  }
-                : {})}
               className={cn(
                 "hover:text-foreground/80 flex items-center text-lg font-medium transition-colors sm:text-sm",
                 item.href.startsWith(`/${segment}`)

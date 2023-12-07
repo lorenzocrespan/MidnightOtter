@@ -1,6 +1,6 @@
 // Components imports
-import { MainNav } from "@/components/modalComponents/navigationBarModal/leftNavbar";
-import { LogNav } from "@/components/modalComponents/navigationBarModal/rightNavbar";
+import { MainNav } from "@/components/levelOneComps/navigationBar/leftNavbar";
+import { LogNav } from "@/components/levelOneComps/navigationBar/rightNavbar";
 
 // Config imports
 import {
