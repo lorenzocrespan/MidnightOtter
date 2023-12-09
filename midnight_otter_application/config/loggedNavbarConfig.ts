@@ -10,6 +10,11 @@ export const loggedPageLeftConfig: BaseNavbarType = {
       disabled: false,
     },
     {
+      title: "User manager",
+      href: "/userManagerPage",
+      disabled: false,
+    },
+    {
       title: "Upload exhibit",
       // title: "Caricamento reperti",
       href: "/uploadCasePage",
