@@ -2,7 +2,9 @@
 // Wagmi imports
 import { useAccount, useNetwork, useBalance } from "wagmi";
 
-export default function userAccountOverviewComponent() {
+
+export default function UserAccountOverviewComponent() {
+
   /**
    * @description Variable that stores the state of the user's account.
    * It is an object that contains the user's address, the network they are
@@ -13,6 +15,8 @@ export default function userAccountOverviewComponent() {
     network: useNetwork(),
     balance: useBalance({ address: useAccount().address }),
   };
+
+
 
   console.log("[userAccountOverview] Data about user, network and contract: ", dataUserBlockchain);
 
