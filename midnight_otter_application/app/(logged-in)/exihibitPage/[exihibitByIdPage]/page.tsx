@@ -42,7 +42,7 @@ export default function Page({
             </h2>
             <div className="flex flex-col gap-3 pb-5">
               <div className="flex gap-2">
-                <p className="text-xl">Identificativo numerico dell'oggetto:</p>{" "}
+                <p className="text-xl">Identificativo numerico dell&apos;oggetto:</p>{" "}
               </div>
               <div className="flex gap-2">
                 <p className="text-xl">Tipologia oggetto:</p>{" "}
@@ -51,11 +51,11 @@ export default function Page({
                 <p className="text-xl">Descrizione oggetto acquisito:</p>{" "}
               </div>
               <div className="flex gap-2">
-                <p className="text-xl">Ragioni dell'acquisizione:</p>{" "}
+                <p className="text-xl">Ragioni dell&apos;acquisizione:</p>{" "}
               </div>
             </div>
             <h2 className="pb-2 text-2xl font-semibold text-amber-500">
-              Informazioni proprietario dell'oggetto
+              Informazioni proprietario dell&apos;oggetto
             </h2>
             <div className="flex flex-col gap-3 pb-5">
               <div className="flex gap-2">
@@ -66,7 +66,7 @@ export default function Page({
               </div>
             </div>
             <h2 className="pb-2 text-2xl font-semibold text-amber-500">
-              Informazioni perito dell'acquisizione
+              Informazioni perito dell&apos;acquisizione
             </h2>
             <div className="flex flex-col gap-3 pb-5">
               <div className="flex gap-2">

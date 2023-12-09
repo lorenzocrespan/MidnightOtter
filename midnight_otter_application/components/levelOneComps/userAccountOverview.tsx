@@ -41,7 +41,7 @@ export default function userAccountOverviewComponent() {
             <tr>
               <td className="text-xl">Ruolo:</td>
               <td className="cursor-pointer px-5 duration-500 ease-out hover:text-blue-500">
-                TODO: RuoloUtente form contract (es. "Esperto", "Amministratore", "Pubblico ministero", etc.)
+                TODO: RuoloUtente form contract (es. Esperto, Amministratore, Pubblico ministero, etc.)
               </td>
             </tr>
           </tbody>
@@ -73,7 +73,7 @@ export default function userAccountOverviewComponent() {
             <tr>
               <td className="text-xl">Contratto di riferimento: </td>
               <td className="cursor-pointer px-5 duration-500 ease-out hover:text-blue-500">
-                TODO: IndirizzoContratto (es. "0x1234567890abcdef1234567890abcdef12345678")
+                TODO: IndirizzoContratto (es. 0x1234567890abcdef1234567890abcdef12345678)
               </td>
             </tr>
           </tbody>

@@ -100,7 +100,7 @@ export function AddExihibitsForm({ className, ...props }: FormProps) {
                 Informazioni oggetto acquisito
               </h1>
               <p className="text-xl">
-                Inserire le informazioni relative all'oggetto acquisito.
+                Inserire le informazioni relative all&apos;oggetto acquisito.
               </p>
               <div className="flex flex-row gap-5">
                 <div className="flex grow flex-col gap-2">
@@ -128,7 +128,7 @@ export function AddExihibitsForm({ className, ...props }: FormProps) {
                   )}
                 </div>
               </div>
-              <h3 className="text-xl font-bold">Descrizione dell'oggetto</h3>
+              <h3 className="text-xl font-bold">Descrizione dell&apos;oggetto</h3>
               <InputCase
                 {...addCasesFormConfig.objectDescription}
                 disabled={isLoading}
@@ -142,7 +142,7 @@ export function AddExihibitsForm({ className, ...props }: FormProps) {
             <div>
               <h1 className="text-3xl font-bold">Informazioni acquisizione</h1>
               <p className="text-xl">
-                Inserire le informazioni relative all'acquisizione.
+                Inserire le informazioni relative all&apos;acquisizione.
               </p>
               <div className="flex flex-row gap-5">
                 <div className="flex grow flex-col gap-2">
