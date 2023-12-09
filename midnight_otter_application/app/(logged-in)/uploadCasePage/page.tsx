@@ -1,7 +1,7 @@
 // Next imports
 import { Metadata } from "next";
 // React components imports
-import { AddCasesForm } from "@/components/modalComponents/formsModal/addCasesModal/addCasesForm";
+import { AddExihibitsForm } from "@/components/levelTwoComps/formModal/addExihibitForm";
 
 // Update the metadata for the page.
 export const metadata: Metadata = {
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <div className="flex flex-col gap-5">
-      <AddCasesForm />
+      <AddExihibitsForm />
     </div>
   );
 }

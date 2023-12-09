@@ -1,11 +1,11 @@
 "use client";
-
+// Next imports
 import Link from "next/link";
-import { useSelectedLayoutSegment } from "next/navigation";
-
+import { useSelectedLayoutSegment, useRouter } from "next/navigation";
+// Import utils and types
 import { MainNavItem } from "@/types";
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
+// Wagmi imports
 import { disconnect } from "wagmi/actions";
 
 interface MainNavProps {
@@ -13,8 +13,8 @@ interface MainNavProps {
 }
 
 export function LogNav({ items }: MainNavProps) {
-  const segment = useSelectedLayoutSegment();
   const router = useRouter();
+  const segment = useSelectedLayoutSegment();
 
   return (
     <div className="flex gap-6 md:gap-10">

@@ -17,6 +17,7 @@ export type InputFormDataType = {
   className: string;
   placeholder: string;
   autoCapitalize: string;
+  options?: string[];
   disabled?: boolean;
   verify?: boolean;
 };

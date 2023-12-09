@@ -1,5 +1,5 @@
 "use client";
-// Import Wagmi components
+// Wagmi imports
 import { useAccount, useNetwork, useBalance } from "wagmi";
 
 export default function userAccountOverviewComponent() {
