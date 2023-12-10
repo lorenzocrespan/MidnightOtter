@@ -64,7 +64,7 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         // List of URI for the expert reports
         string[] expertReports;
         // List of events for the chain of custody
-        ChainCustody[] chainCustody;
+        // ChainCustody[] chainCustody;
     }
 
     /**
@@ -212,37 +212,37 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
 
     // The following functions are required to manage the expert reports of the Exihibit of the case.
 
-    function addExpertReport(
-        uint256 tokenId,
-        string memory expertReport
-    ) public onlyRole(MINTER_ROLE) {
-        // Check if the sender is the owner of the exihibit or a shared user
-        require(
-            ownerOf(tokenId) == msg.sender || shareOf(tokenId, msg.sender),
-            "MidnightOtter: Only the owner of the case can add an expert report."
-        );
-        // Add the expert report to the list of expert reports
-        caseProperties[tokenId].expertReports.push(expertReport);
-    }
+    // function addExpertReport(
+    //     uint256 tokenId,
+    //     string memory expertReport
+    // ) public onlyRole(MINTER_ROLE) {
+    //     // Check if the sender is the owner of the exihibit or a shared user
+    //     require(
+    //         ownerOf(tokenId) == msg.sender || shareOf(tokenId, msg.sender),
+    //         "MidnightOtter: Only the owner of the case can add an expert report."
+    //     );
+    //     // Add the expert report to the list of expert reports
+    //     caseProperties[tokenId].expertReports.push(expertReport);
+    // }
 
     // The following functions are required to manage the chain of custody of the Exihibit of the case.
 
-    function addChainCustody(
-        uint256 tokenId,
-        string memory releasedBy,
-        string memory receivedBy,
-        string memory action
-    ) public onlyRole(MINTER_ROLE) {
-        // Check if the sender is the owner of the exihibit or a shared user
-        require(
-            ownerOf(tokenId) == msg.sender || shareOf(tokenId, msg.sender),
-            "MidnightOtter: Only the owner of the case can add an event to the chain of custody."
-        );
-        // Add the event to the list of events
-        caseProperties[tokenId].chainCustody.push(
-            ChainCustody(block.timestamp, releasedBy, receivedBy, action)
-        );
-    }
+    // function addChainCustody(
+    //     uint256 tokenId,
+    //     string memory releasedBy,
+    //     string memory receivedBy,
+    //     string memory action
+    // ) public onlyRole(MINTER_ROLE) {
+    //     // Check if the sender is the owner of the exihibit or a shared user
+    //     require(
+    //         ownerOf(tokenId) == msg.sender || shareOf(tokenId, msg.sender),
+    //         "MidnightOtter: Only the owner of the case can add an event to the chain of custody."
+    //     );
+    //     // Add the event to the list of events
+    //     caseProperties[tokenId].chainCustody.push(
+    //         ChainCustody(block.timestamp, releasedBy, receivedBy, action)
+    //     );
+    // }
 
     // The following functions are overrides required by Solidity.
 

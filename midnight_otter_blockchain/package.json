@@ -10,7 +10,8 @@
     "hardhat clean": "npx hardhat clean",
     "hardhat compile": "npx hardhat compile",
     "hardhat wipe": "npx hardhat ignition wipe deploymentId futureId",
-    "deploy --network sepolia": " npx hardhat ignition deploy ignition/modules/midnightOtter.js --network sepolia"
+    "deploy --network sepolia": "npx hardhat ignition deploy ignition/modules/midnightOtter.js --network sepolia",
+    "export artifacts": "node scripts/exportArtifact.js"
   },
   "keywords": [],
   "author": "",
@@ -19,9 +20,9 @@
     "@nomicfoundation/hardhat-ethers": "^3.0.5",
     "@nomicfoundation/hardhat-ignition": "^0.11.2",
     "@nomicfoundation/hardhat-toolbox": "^3.0.0",
-    "@openzeppelin/contracts": "^5.0.0",
+    "@openzeppelin/contracts": "^5.0.1",
     "ethers": "^6.9.0",
-    "hardhat": "^2.19.1",
+    "hardhat": "^2.19.2",
     "hardhat-ethernal": "^3.2.5"
   },
   "dependencies": {
