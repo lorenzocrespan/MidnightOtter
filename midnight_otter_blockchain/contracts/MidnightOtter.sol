@@ -6,8 +6,18 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
-    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    /**
+     * @notice Role definition for the contract.
+     *
+     */
+    bytes32 public constant MANTAINER_ROLE = keccak256("MANTAINER_ROLE");
+    bytes32 public constant PUBLIC_ADMINISTRATOR_ROLE =
+        keccak256("PUBLIC_ADMINISTRATOR_ROLE");
+    bytes32 public constant EXPERT_ROLE = keccak256("EXPERT_ROLE");
+    bytes32 public constant LAWYER_ROLE = keccak256("LAWYER_ROLE");
+
     uint256 private _nextTokenId;
+
     /**
      * @notice Enum of the state of the case.
      */
@@ -15,6 +25,7 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         Open,
         Closed
     }
+
     /**
      * @notice Enum of the status of the object.
      */
@@ -90,23 +101,134 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
     // Given a token id, return the list of users
     mapping(uint256 => address[]) public sharedExihibit;
 
-    constructor(
-        address defaultAdmin,
-        address minter
-    ) ERC721("MidnightOtter", "MOK") {
-        _grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
-        _grantRole(MINTER_ROLE, minter);
+    /**
+     * @notice Constructor of the contract.
+     *
+     * @param mantainer Address of the mantainer of the contract.
+     *
+     */
+    constructor(address mantainer) ERC721("MidnightOtter", "MOK") {
+        _grantRole(MANTAINER_ROLE, mantainer);
+        _grantRole(PUBLIC_ADMINISTRATOR_ROLE, mantainer);
     }
+
+    // The following functions are required to manage the roles list of the contract.
+
+    struct RequestRole {
+        bytes32 role;
+        string name;
+        string surname;
+        address user;
+    }
+
+    // Mapping of the list of users who have requested a role.
+    // Given a request id, return the request.
+    mapping(uint256 => RequestRole) private requestRole;
+
+    uint256 private _nextRequestRoleId;
+
+    /**
+     * @notice Function to request a role.
+     *
+     * @param role Role to request. (64-character hexadecimal string. E.g. 0x7465737400000000000000000000000000000000000000000000000000000000)
+     * @param name Name of the user.
+     * @param surname Surname of the user.
+     *
+     */
+    function addRequestRoleList(
+        bytes32 role,
+        string memory name,
+        string memory surname
+    ) public {
+        uint256 requestId = _nextRequestRoleId++;
+        requestRole[requestId] = RequestRole(role, name, surname, msg.sender);
+    }
+
+    /**
+     * @notice Function to return the request in pending.
+     *
+     */
+    function getRequestRoleList() public view returns (RequestRole[] memory) {
+        RequestRole[] memory requestRoleList = new RequestRole[](
+            _nextRequestRoleId
+        );
+        for (uint256 i = 0; i < _nextRequestRoleId; i++) {
+            requestRoleList[i] = requestRole[i];
+        }
+        return requestRoleList;
+    }
+
+    /**
+     * @notice Function to grant a role, mantainer and public administrator only can call this function.
+     *
+     * @param requestId Id of the request.
+     *
+     */
+    function acceptRequestRole(uint256 requestId) public onlyRole(PUBLIC_ADMINISTRATOR_ROLE) {
+        _grantRole(requestRole[requestId].role, requestRole[requestId].user);
+        delete requestRole[requestId];
+    }
+
+    /**
+     * @notice Function to reject a role, mantainer and public administrator only can call this function.
+     *
+     * @param requestId Id of the request.
+     *
+     */
+    function rejectRequestRole(uint256 requestId) public onlyRole(PUBLIC_ADMINISTRATOR_ROLE) {
+        delete requestRole[requestId];
+    }
+
+    // The following functions are required to manage the roles of the contract.
+
+    /**
+     * @notice Function to switch the role of the user.
+     *
+     * @param role Role to grant.
+     * @param user User to grant the role.
+     *
+     */
+    function switchRole(bytes32 role, address user) public onlyRole(PUBLIC_ADMINISTRATOR_ROLE) {
+        // Check if the user has the role
+        require(
+            hasRole(role, user),
+            "MidnightOtter: The user doesn't have the role."
+        );
+        // Revoke the role
+        _revokeRole(role, user);
+        // Grant the role
+        _grantRole(role, user);
+    }
+
+    /**
+     * @notice Function to return the role of the user.
+     *
+     * @return Role of the user.
+     */
+    function getRole() public view returns (bytes32) {
+        if (hasRole(MANTAINER_ROLE, msg.sender)) {
+            return MANTAINER_ROLE;
+        } else if (hasRole(PUBLIC_ADMINISTRATOR_ROLE, msg.sender)) {
+            return PUBLIC_ADMINISTRATOR_ROLE;
+        } else if (hasRole(EXPERT_ROLE, msg.sender)) {
+            return EXPERT_ROLE;
+        } else if (hasRole(LAWYER_ROLE, msg.sender)) {
+            return LAWYER_ROLE;
+        } else {
+            return 0x00;
+        }
+    }
+
+    // The following functions are required to manage the Exihibit of the case.
 
     // Valid: [12,"pippo",0,"pippo",11,1,1,"pippo","pippo",111,0,[""],[10,"a","a","transazione"]]
     function safeMint(
         address to,
         Exihibit memory initialTokenStruct
-    ) public onlyRole(MINTER_ROLE) {
+    ) public onlyRole(EXPERT_ROLE) {
         uint256 tokenId = _nextTokenId++;
         _safeMint(to, tokenId);
         caseProperties[tokenId] = initialTokenStruct;
-        
     }
 
     function unsafeMint(address to, Exihibit memory initialTokenStruct) public {
@@ -143,7 +265,7 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
     function grantShareExihibit(
         uint256 tokenId,
         address user
-    ) public onlyRole(MINTER_ROLE) {
+    ) public onlyRole(EXPERT_ROLE) {
         // Check if the sender is the owner of the case
         require(
             ownerOf(tokenId) == msg.sender,
@@ -163,7 +285,7 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
     function ungrantShareExihibit(
         uint256 tokenId,
         address user
-    ) public onlyRole(MINTER_ROLE) {
+    ) public onlyRole(EXPERT_ROLE) {
         // Check if the sender is the owner of the case
         require(
             ownerOf(tokenId) == msg.sender,
@@ -188,7 +310,7 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         }
     }
 
-    function unshareExihibit(uint256 tokenId) public onlyRole(MINTER_ROLE) {
+    function unshareExihibit(uint256 tokenId) public onlyRole(EXPERT_ROLE) {
         // Check if the sender is the owner of the case
         require(
             ownerOf(tokenId) == msg.sender,
@@ -211,38 +333,6 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
     }
 
     // The following functions are required to manage the expert reports of the Exihibit of the case.
-
-    // function addExpertReport(
-    //     uint256 tokenId,
-    //     string memory expertReport
-    // ) public onlyRole(MINTER_ROLE) {
-    //     // Check if the sender is the owner of the exihibit or a shared user
-    //     require(
-    //         ownerOf(tokenId) == msg.sender || shareOf(tokenId, msg.sender),
-    //         "MidnightOtter: Only the owner of the case can add an expert report."
-    //     );
-    //     // Add the expert report to the list of expert reports
-    //     caseProperties[tokenId].expertReports.push(expertReport);
-    // }
-
-    // The following functions are required to manage the chain of custody of the Exihibit of the case.
-
-    // function addChainCustody(
-    //     uint256 tokenId,
-    //     string memory releasedBy,
-    //     string memory receivedBy,
-    //     string memory action
-    // ) public onlyRole(MINTER_ROLE) {
-    //     // Check if the sender is the owner of the exihibit or a shared user
-    //     require(
-    //         ownerOf(tokenId) == msg.sender || shareOf(tokenId, msg.sender),
-    //         "MidnightOtter: Only the owner of the case can add an event to the chain of custody."
-    //     );
-    //     // Add the event to the list of events
-    //     caseProperties[tokenId].chainCustody.push(
-    //         ChainCustody(block.timestamp, releasedBy, receivedBy, action)
-    //     );
-    // }
 
     // The following functions are overrides required by Solidity.
 

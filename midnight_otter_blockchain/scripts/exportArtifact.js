@@ -5,13 +5,16 @@ const contractSmartContract = require("../ignition/deployments/chain-11155111/ar
 // create the contract data object
 const contractData = {
   address: contractAddress["MidnightOtter#MidnightOtter"],
-  abi: contractSmartContract["abi"]
+  abi: contractSmartContract["abi"],
 };
 // Convert the contract data object to JSON string
 const jsonData = JSON.stringify(contractData, null, 2);
 // Create the smartcontractData directory if it does not exist
-if (!fs.existsSync("../smartcontractData")) {
-  fs.mkdirSync("../smartcontractData");
+if (!fs.existsSync("../midnight_otter_smartcontract")) {
+  fs.mkdirSync("../midnight_otter_smartcontract");
 }
 // Write the JSON string to the file
-fs.writeFileSync("../smartcontractData/MidnightOtter.json", jsonData);
+fs.writeFileSync(
+  "../midnight_otter_smartcontract/MidnightOtter.json",
+  jsonData
+);
