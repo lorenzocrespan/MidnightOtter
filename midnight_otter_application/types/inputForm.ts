@@ -31,6 +31,7 @@ export type InputFormDataType = {
 export type InputAuthenticationDataType = {
   type: string;
   id: string;
+  value?: string[];
   className: string;
   placeholder: string;
   autoCapitalize: string;

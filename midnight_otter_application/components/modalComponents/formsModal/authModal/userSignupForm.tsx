@@ -1,63 +1,122 @@
 "use client";
-
-import React from "react";
+// React imports
+import { useState, useEffect, HTMLAttributes, useCallback } from "react";
 import { useForm, FormProvider } from "react-hook-form";
+
 import { IdentityInput } from "@/components/baseComponents/inputs/identityInput";
-import { PasswordInput } from "@/components/baseComponents/inputs/passwordInput";
 import { SubtitleInputText } from "@/components/baseComponents/inputs/subtitleInputText";
-import { signFormConfig, verifyPasswordConfig } from "@/config/signFormConfig";
+import { signFormConfig } from "@/config/signFormConfig";
 import { AbsoluteSpinner } from "@/components/pageComponents/spinnerLoadingComponent";
+// Wagmi imports
+import { connect } from "wagmi/actions";
+import { InjectedConnector } from "wagmi/connectors/injected";
+import { useAccount, useContractWrite } from "wagmi";
+// Import smart contract
+import { getContractAbiAndAddress } from "@/services/smartcontractUtils";
+import { Abi, Narrow } from "viem";
+import Web3 from "web3";
 
+interface UserAuthFormProps extends HTMLAttributes<HTMLDivElement> {}
 
-interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
-
-export function UserSignupForm({ className, ...props }: UserAuthFormProps) {
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+export default function UserSignupForm({
+  className,
+  ...props
+}: UserAuthFormProps) {
+  const [isLoadingComponent, setIsLoading] = useState<boolean>(false);
 
   const methods = useForm();
+
   const {
     handleSubmit,
     formState: { errors },
   } = methods;
 
-  const onSubmit = (data: { [key: string]: string }) => {
-    console.log(data);
+  const fetchData = useCallback(async () => {
+    const contractInfo = await getContractAbiAndAddress();
+    setContractInfo(contractInfo);
+  }, []);
+
+  useEffect(() => {
+    fetchData().catch(console.error);
+  }, []);
+
+  const [contractInfo, setContractInfo] = useState<{
+    abi: Narrow<readonly unknown[] | Abi>;
+    address: `0x${string}`;
+  }>();
+
+  const { writeAsync } = useContractWrite({
+    address: contractInfo?.address,
+    abi: contractInfo?.abi,
+    functionName: "addRequestRoleList",
+  });
+
+  const { isConnected } = useAccount();
+
+  const onSubmit = async (dataRequestedAccount: { [key: string]: string }) => {
     setIsLoading(true);
-    setTimeout(() => {
+    console.log(contractInfo);
+    // Setup wagmi connection
+    if (!isConnected) {
+      connect({
+        connector: new InjectedConnector(),
+      }).then((account) => {
+        if (account) {
+          // function addRequestRoleList(bytes32 role, string memory name, string memory surname)
+          writeAsync({
+            args: [
+              Web3.utils.padRight(
+                Web3.utils.asciiToHex(dataRequestedAccount.role),
+                64
+              ),
+              dataRequestedAccount.name,
+              dataRequestedAccount.surname,
+            ],
+          }).then(() => {
+            setIsLoading(false);
+          });
+        } else {
+          console.log("Error while connecting to Metamask.");
+          setIsLoading(false);
+        }
+      });
+    } else {
       setIsLoading(false);
-    }, 2000);
+    }
   };
 
   return (
     <div className="flex flex-col gap-5" {...props}>
-      {isLoading && <AbsoluteSpinner />}
+      {isLoadingComponent && <AbsoluteSpinner />}
       <FormProvider {...methods}>
         <form>
           <div className="grid gap-3">
-            <IdentityInput {...signFormConfig.email} disabled={isLoading} />
-            {errors.email && (
-              <SubtitleInputText text={errors.email.message?.toString()} />
-            )}
-            <IdentityInput {...signFormConfig.name} disabled={isLoading} />
+            <IdentityInput
+              {...signFormConfig.name}
+              disabled={isLoadingComponent}
+            />
             {errors.name && (
               <SubtitleInputText text={errors.name.message?.toString()} />
             )}
-            <IdentityInput {...signFormConfig.surname} disabled={isLoading} />
+            <IdentityInput
+              {...signFormConfig.surname}
+              disabled={isLoadingComponent}
+            />
             {errors.surname && (
               <SubtitleInputText text={errors.surname.message?.toString()} />
             )}
-            <PasswordInput {...verifyPasswordConfig} disabled={isLoading} />
-            {errors.password_1 && (
-              <SubtitleInputText text={errors.password_1.message?.toString()} />
-            )}
-            {errors.password_2 && (
-              <SubtitleInputText text={errors.password_2.message?.toString()} />
+            <IdentityInput
+              {...signFormConfig.role}
+              disabled={isLoadingComponent}
+            />
+            {errors.role && (
+              <SubtitleInputText text={errors.role.message?.toString()} />
             )}
             <button
               type="button"
               className="my-4 w-full rounded-md py-2 text-sm text-white outline outline-1 outline-slate-400 hover:bg-gray-800"
               onClick={handleSubmit(onSubmit)}
-              disabled={isLoading}
+              disabled={isLoadingComponent}
             >
               Sign Up
             </button>

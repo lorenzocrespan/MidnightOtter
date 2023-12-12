@@ -1,6 +1,6 @@
 "use client";
 // React imports
-import { useState } from "react";
+import { useState, HTMLAttributes } from "react";
 // Import utils and types
 import { addCasesFormConfig } from "@/config/addCasesFormConfig";
 import { FormProvider, useForm } from "react-hook-form";
@@ -16,7 +16,7 @@ import { useContractWrite } from "wagmi";
 import contractABI from "@/services/smartcontract.json";
 
 // Form props interface
-interface FormProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface FormProps extends HTMLAttributes<HTMLDivElement> {}
 
 export function AddExihibitsForm({ className, ...props }: FormProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false);

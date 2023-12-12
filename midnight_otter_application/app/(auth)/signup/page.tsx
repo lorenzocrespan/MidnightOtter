@@ -4,7 +4,7 @@ import { Metadata } from "next";
 import { Icons } from "@/components/baseComponents/icons";
 
 import { TextLink } from "@/components/baseComponents/textLinks/textLink";
-import { UserSignupForm } from "@/components/modalComponents/formsModal/authModal/userSignupForm";
+import UserSignupForm from "@/components/modalComponents/formsModal/authModal/userSignupForm";
 
 // Define metadata (title and description) for the page.
 export const metadata: Metadata = {

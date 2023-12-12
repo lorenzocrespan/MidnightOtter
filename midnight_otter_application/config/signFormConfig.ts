@@ -4,16 +4,6 @@ import { InputAuthenticationDataType } from "@/types/inputForm";
 // Export a constant of type InputAuthenticationDataType with the information about the input fields.
 // signinFormConfig is a dictionary of InputAuthenticationDataType.
 export const signFormConfig: { [key: string]: InputAuthenticationDataType } = {
-  email: {
-    type: "email",
-    id: "email",
-    className:
-      "w-full rounded-md p-2 text-sm text-slate-900 outline outline-1 outline-slate-400",
-    placeholder: "mail@domain.com",
-    autoCapitalize: "none",
-    autoComplete: "email",
-    autoCorrect: "off",
-  },
   name: {
     type: "text",
     id: "name",
@@ -32,6 +22,17 @@ export const signFormConfig: { [key: string]: InputAuthenticationDataType } = {
     placeholder: "Surname",
     autoCapitalize: "none",
     autoComplete: "surname",
+    autoCorrect: "off",
+  },
+  role: {
+    type: "select",
+    value: ["Role", "PUBLIC_ADMINISTRATOR_ROLE", "EXPERT_ROLE", "LAWYER_ROLE"],
+    id: "role",
+    className:
+      "w-full rounded-md p-2 text-sm text-slate-900 outline outline-1 outline-slate-400",
+    placeholder: "Role",
+    autoCapitalize: "none",
+    autoComplete: "role",
     autoCorrect: "off",
   },
 };

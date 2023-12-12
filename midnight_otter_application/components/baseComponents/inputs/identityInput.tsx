@@ -6,12 +6,12 @@ export function IdentityInput(identityInputProps: InputAuthenticationDataType) {
 
   const switchPatternApply = (type: string) => {
     switch (type) {
-      case "email":
-        return /^[^@]+@[^@]+\.[^@]+$/;
       case "name":
         return /^[a-zA-Z]+$/;
       case "surname":
         return /^[a-zA-Z]+$/;
+      case "role":
+        return /^(?!Role).*$/;
       default:
         return /^[a-zA-Z]+$/;
     }
@@ -21,7 +21,7 @@ export function IdentityInput(identityInputProps: InputAuthenticationDataType) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
-  return (
+  return identityInputProps.type !== "select" ? (
     <input
       {...register(identityInputProps.id, {
         required: firstLetterUppercase(identityInputProps.id) + " is required",
@@ -39,5 +39,31 @@ export function IdentityInput(identityInputProps: InputAuthenticationDataType) {
       autoCorrect={identityInputProps.autoCorrect}
       disabled={identityInputProps.disabled}
     />
+  ) : (
+    <select
+      {...register(identityInputProps.id, {
+        required: firstLetterUppercase(identityInputProps.id) + " is required",
+        pattern: {
+          value: switchPatternApply(identityInputProps.id),
+          message: "Invalid input",
+        },
+      })}
+      id={identityInputProps.id}
+      className="w-full rounded-md p-2 text-sm text-slate-900 outline outline-1 outline-slate-400"
+      placeholder={identityInputProps.placeholder}
+      autoCapitalize={identityInputProps.autoCapitalize}
+      autoComplete={identityInputProps.autoComplete}
+      autoCorrect={identityInputProps.autoCorrect}
+      disabled={identityInputProps.disabled}
+    >
+      {identityInputProps.value &&
+        identityInputProps.value.map((value, index) => {
+          return (
+            <option key={index} value={value}>
+              {firstLetterUppercase(value.replaceAll("_", " ").toLowerCase())}
+            </option>
+          );
+        })}
+    </select>
   );
 }

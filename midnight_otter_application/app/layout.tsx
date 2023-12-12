@@ -25,18 +25,7 @@ export const metadata = {
     },
   ],
   creator: "Lorenzo Crespan",
-  openGraph: {
-    type: "website",
-    locale: "it_IT",
-    title: siteConfig.name,
-    description: siteConfig.description,
-    siteName: siteConfig.name,
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: siteConfig.name,
-    description: siteConfig.description,
-  },
+  
   icons: {
     icon: "/images/favicon.ico",
     apple: "/images/apple-touch-icon.png",
