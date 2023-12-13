@@ -19,7 +19,7 @@ interface SigninDataProps {
 export default function SignupScreen() {
   const signinProps: SigninDataProps = {
     title: "Welcome to Midnight Otter",
-    description: "Enter your email and password to sign in to your account.",
+    description: "Enter...",
   };
 
   return (

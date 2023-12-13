@@ -1,80 +1,107 @@
 "use client";
 
-import * as React from "react";
-
-import { IdentityInput } from "@/components/baseComponents/inputs/identityInput";
-import { passwordConfig, signFormConfig } from "@/config/signFormConfig";
-import { FormProvider, useForm } from "react-hook-form";
-import { SubtitleInputText } from "@/components/baseComponents/inputs/subtitleInputText";
-import { PasswordInput } from "@/components/baseComponents/inputs/passwordInput";
+// React imports
+import { useState, HTMLAttributes, useCallback, useEffect } from "react";
 import { AbsoluteSpinner } from "@/components/pageComponents/spinnerLoadingComponent";
 import { useRouter } from "next/navigation";
 
-import { useAccount } from "wagmi";
 import { connect } from "wagmi/actions";
 import { InjectedConnector } from "wagmi/connectors/injected";
+import { useAccount, useContractRead } from "wagmi";
+import { getContractAbiAndAddress } from "@/services/smartcontractUtils";
+import { Abi, Narrow } from "viem";
 
-interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface UserAuthFormProps extends HTMLAttributes<HTMLDivElement> {}
 
 export function UserSigninForm({ className, ...props }: UserAuthFormProps) {
   const router = useRouter();
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const { isConnected } = useAccount();
+  const { address, isConnected } = useAccount();
 
-  const methods = useForm();
-  const {
-    handleSubmit,
-    formState: { errors },
-  } = methods;
+  const fetchData = useCallback(async () => {
+    const contractInfo = await getContractAbiAndAddress();
+    setContractInfo(contractInfo);
+  }, []);
 
-  const onSubmit = async (data: { [key: string]: string }) => {
+  useEffect(() => {
+    fetchData().catch(console.error);
+  }, []);
+
+  const [contractInfo, setContractInfo] = useState<{
+    abi: Narrow<readonly unknown[] | Abi>;
+    address: `0x${string}`;
+  }>();
+
+  // Call read function "getRole" from smart contract
+  const { data } = useContractRead({
+    address: contractInfo?.address,
+    abi: contractInfo?.abi,
+    functionName: "getRole",
+    enabled: isConnected,
+    account: address,
+  });
+
+  const onSubmit = async () => {
     setIsLoading(true);
-    console.log(data);
     console.log("Signing in...", isConnected);
-    if (!isConnected) {
-      connect({
-        connector: new InjectedConnector(),
-      }).then((account) => {
+    connect({
+      connector: new InjectedConnector(),
+    })
+      .then(async (account) => {
         if (account) {
-          router.push("/userMainPage");
-          setIsLoading(false);
+          console.log("Connected to Metamask.");
+          console.log("Account: ", account);
+          // Await for the useContractRead to finish
+          if (
+            (await data) !==
+            "0x0000000000000000000000000000000000000000000000000000000000000000"
+          ) {
+            console.log(data);
+            console.log("User is registered.");
+            router.push("/userMainPage");
+            setIsLoading(false);
+            return;
+          } else {
+            console.log("User is not registered.");
+            setIsLoading(false);
+            return;
+          }
         } else {
           console.log("Error while connecting to Metamask.");
           setIsLoading(false);
         }
+      })
+      .catch(async (error) => {
+        // If the user is already connected to Metamask, try the
+        if (
+          (await data) !==
+          "0x0000000000000000000000000000000000000000000000000000000000000000"
+        ) {
+          console.log(data);
+          console.log("User is registered.");
+          router.push("/userMainPage");
+          setIsLoading(false);
+          return;
+        } else {
+          console.log("User is not registered.");
+          setIsLoading(false);
+          return;
+        }
       });
-    } else {
-      router.push("/userMainPage");
-      setIsLoading(false);
-    }
   };
 
   return (
     <div className="flex flex-col gap-5" {...props}>
       {isLoading && <AbsoluteSpinner />}
-      <FormProvider {...methods}>
-        <form>
-          <div className="grid gap-3">
-            <IdentityInput {...signFormConfig.email} disabled={isLoading} />
-            {errors.email && (
-              <SubtitleInputText text={errors.email.message?.toString()} />
-            )}
-            <PasswordInput {...passwordConfig} disabled={isLoading} />
-            {errors.password_1 && (
-              <SubtitleInputText text={errors.password_1.message?.toString()} />
-            )}
-            <button
-              type="button"
-              className="my-4 w-full rounded-md py-2 text-sm text-white outline outline-1 outline-slate-400 hover:bg-gray-800"
-              onClick={handleSubmit(onSubmit)}
-              disabled={isLoading}
-            >
-              Sign In
-            </button>
-          </div>
-        </form>
-      </FormProvider>
+      <button
+        type="button"
+        className="my-4 w-full rounded-md py-2 text-sm text-white outline outline-1 outline-slate-400 hover:bg-gray-800"
+        onClick={onSubmit}
+        disabled={isLoading}
+      >
+        Sign In
+      </button>
       <div className="relative">
         <div className="absolute inset-0 z-10 flex items-center">
           <span className="w-full border-t border-slate-300" />

@@ -25,7 +25,6 @@ export const metadata = {
     },
   ],
   creator: "Lorenzo Crespan",
-  
   icons: {
     icon: "/images/favicon.ico",
     apple: "/images/apple-touch-icon.png",

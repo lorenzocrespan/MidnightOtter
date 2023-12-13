@@ -10,9 +10,10 @@ import {
 
 interface AuthLayoutProps {
   children: React.ReactNode;
+  session: any;
 }
 
-export default function AuthLayout({ children }: AuthLayoutProps) {
+export default function AuthLayout({ children, session }: AuthLayoutProps) {
   return (
     <div className="container flex min-h-screen flex-col">
       <header className=" sticky top-0 z-40 border-b bg-black">
