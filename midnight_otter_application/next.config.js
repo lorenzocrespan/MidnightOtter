@@ -16,6 +16,14 @@ const nextConfig = {
     // Enables the styled-components SWC transform
     styledComponents: true,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "avatar.iran.liara.run",
+      },
+    ],
+  },
 };
 
 module.exports = nextConfig;

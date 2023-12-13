@@ -14,6 +14,8 @@ import { Abi, Narrow } from "viem";
 interface UserAuthFormProps extends HTMLAttributes<HTMLDivElement> {}
 
 export function UserSigninForm({ className, ...props }: UserAuthFormProps) {
+  const errorAddress =
+    "0x0000000000000000000000000000000000000000000000000000000000000000";
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -25,8 +27,8 @@ export function UserSigninForm({ className, ...props }: UserAuthFormProps) {
   }, []);
 
   useEffect(() => {
-    fetchData().catch(console.error);
-  }, []);
+    fetchData();
+  }, [fetchData]);
 
   const [contractInfo, setContractInfo] = useState<{
     abi: Narrow<readonly unknown[] | Abi>;
@@ -40,55 +42,35 @@ export function UserSigninForm({ className, ...props }: UserAuthFormProps) {
     functionName: "getRole",
     enabled: isConnected,
     account: address,
+    onSuccess: (data) => {
+      if (data !== errorAddress) {
+        router.push("/userMainPage");
+        setIsLoading(false);
+        return;
+      }
+      setIsLoading(false);
+    },
   });
 
-  const onSubmit = async () => {
-    setIsLoading(true);
-    console.log("Signing in...", isConnected);
+  const onSubmit = () => {
     connect({
       connector: new InjectedConnector(),
     })
-      .then(async (account) => {
-        if (account) {
-          console.log("Connected to Metamask.");
-          console.log("Account: ", account);
-          // Await for the useContractRead to finish
-          if (
-            (await data) !==
-            "0x0000000000000000000000000000000000000000000000000000000000000000"
-          ) {
-            console.log(data);
-            console.log("User is registered.");
-            router.push("/userMainPage");
-            setIsLoading(false);
-            return;
-          } else {
-            console.log("User is not registered.");
-            setIsLoading(false);
-            return;
-          }
-        } else {
-          console.log("Error while connecting to Metamask.");
-          setIsLoading(false);
-        }
+      .then(() => {
+        console.log("User is connected to Metamask.");
+        setIsLoading(true);
       })
-      .catch(async (error) => {
+      .catch(() => {
         // If the user is already connected to Metamask, try the
-        if (
-          (await data) !==
-          "0x0000000000000000000000000000000000000000000000000000000000000000"
-        ) {
+        if (data !== errorAddress) {
           console.log(data);
           console.log("User is registered.");
           router.push("/userMainPage");
-          setIsLoading(false);
-          return;
-        } else {
-          console.log("User is not registered.");
-          setIsLoading(false);
-          return;
         }
+        console.log("User is not registered");
       });
+    setIsLoading(false);
+    return;
   };
 
   return (

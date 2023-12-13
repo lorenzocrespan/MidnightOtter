@@ -5,9 +5,8 @@ import { siteConfig } from "@/config/siteConfig";
 import { Web3Modal } from "@/context/Web3Modal";
 
 // Definition of the DefaultLayoutProps type that is used in the RootLayout function.
-interface DefaultLayoutProps {
+interface LayoutProps {
   children: React.ReactNode;
-  session: any;
 }
 
 // Definition of the metadata for the site.
@@ -31,7 +30,7 @@ export const metadata = {
   },
 };
 
-export default function BaseLayout({ children, session }: DefaultLayoutProps) {
+export default function BaseLayout({ children }: LayoutProps) {
   return (
     <html lang="it" suppressHydrationWarning>
       <head />

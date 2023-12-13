@@ -2,11 +2,11 @@ import { BackButton } from "@/components/baseComponents/buttons/backButton";
 import { Suspense } from "react";
 import Loading from "./loading";
 
-interface AuthLayoutProps {
+interface LayoutProps {
   children: React.ReactNode;
 }
 
-export default function AuthLayout({ children }: AuthLayoutProps) {
+export default function AuthLayout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen">
       <BackButton title="Homepage" destination="/" />

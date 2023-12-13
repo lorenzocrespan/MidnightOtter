@@ -1,10 +1,9 @@
 "use client";
+import Image from "next/image";
 // Wagmi imports
 import { useAccount, useNetwork, useBalance } from "wagmi";
 
-
 export default function UserAccountOverviewComponent() {
-
   /**
    * @description Variable that stores the state of the user's account.
    * It is an object that contains the user's address, the network they are
@@ -16,16 +15,26 @@ export default function UserAccountOverviewComponent() {
     balance: useBalance({ address: useAccount().address }),
   };
 
+  // <img
+  //   src={"https://avatar.iran.liara.run/public/37"}
+  //
+  // />;
 
-
-  console.log("[userAccountOverview] Data about user, network and contract: ", dataUserBlockchain);
+  console.log(
+    "[userAccountOverview] Data about user, network and contract: ",
+    dataUserBlockchain
+  );
 
   return (
     <div className="flex h-auto justify-between rounded-md p-12">
       <div className="flex flex-row gap-16">
-        <img
-          src={"https://avatar.iran.liara.run/public/37"}
+        <Image
+          src="https://avatar.iran.liara.run/public/37"
+          width={200}
+          height={200}
+          priority
           className="m-2 my-8 h-36 w-36 flex-shrink-0 rounded-full border-4 border-blue-800  bg-gray-500 md:justify-self-start"
+          alt="User avatar"
         />
         <table className="min-w-full table-auto text-center md:text-left">
           <thead>
@@ -45,7 +54,8 @@ export default function UserAccountOverviewComponent() {
             <tr>
               <td className="text-xl">Ruolo:</td>
               <td className="cursor-pointer px-5 duration-500 ease-out hover:text-blue-500">
-                TODO: RuoloUtente form contract (es. Esperto, Amministratore, Pubblico ministero, etc.)
+                TODO: RuoloUtente form contract (es. Esperto, Amministratore,
+                Pubblico ministero, etc.)
               </td>
             </tr>
           </tbody>
@@ -62,7 +72,8 @@ export default function UserAccountOverviewComponent() {
                   ? "Not connected"
                   : dataUserBlockchain?.network?.chain?.name +
                       " (" +
-                      dataUserBlockchain?.network?.chain?.nativeCurrency.symbol +
+                      dataUserBlockchain?.network?.chain?.nativeCurrency
+                        .symbol +
                       ")" || "Loading..."}
               </td>
             </tr>
@@ -71,13 +82,15 @@ export default function UserAccountOverviewComponent() {
               <td className="cursor-pointer px-5 duration-500 ease-out hover:text-blue-500">
                 {dataUserBlockchain?.balance?.isFetching
                   ? "Loading..."
-                  : dataUserBlockchain?.balance?.data?.formatted || "Balance not found"}
+                  : dataUserBlockchain?.balance?.data?.formatted ||
+                    "Balance not found"}
               </td>
             </tr>
             <tr>
               <td className="text-xl">Contratto di riferimento: </td>
               <td className="cursor-pointer px-5 duration-500 ease-out hover:text-blue-500">
-                TODO: IndirizzoContratto (es. 0x1234567890abcdef1234567890abcdef12345678)
+                TODO: IndirizzoContratto (es.
+                0x1234567890abcdef1234567890abcdef12345678)
               </td>
             </tr>
           </tbody>

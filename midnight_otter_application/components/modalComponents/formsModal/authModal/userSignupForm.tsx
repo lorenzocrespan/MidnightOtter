@@ -37,8 +37,8 @@ export default function UserSignupForm({
   }, []);
 
   useEffect(() => {
-    fetchData().catch(console.error);
-  }, []);
+    fetchData();
+  }, [fetchData]);
 
   const [contractInfo, setContractInfo] = useState<{
     abi: Narrow<readonly unknown[] | Abi>;
