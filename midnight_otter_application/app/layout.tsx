@@ -2,6 +2,7 @@
 import "./globals.css";
 // Types imports
 import { siteConfig } from "@/config/siteConfig";
+import NextAuthProvider from "@/context/AuthProvider";
 import { Web3Modal } from "@/context/Web3Modal";
 
 // Definition of the DefaultLayoutProps type that is used in the RootLayout function.
@@ -35,7 +36,9 @@ export default function BaseLayout({ children }: LayoutProps) {
     <html lang="it" suppressHydrationWarning>
       <head />
       <body className="bg-background gbx-installed min-h-screen antialiased">
-        <Web3Modal>{children}</Web3Modal>
+        <Web3Modal>
+          <NextAuthProvider>{children}</NextAuthProvider>
+        </Web3Modal>
       </body>
     </html>
   );

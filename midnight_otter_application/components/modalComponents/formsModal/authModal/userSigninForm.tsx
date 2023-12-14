@@ -4,16 +4,18 @@
 import { useState, HTMLAttributes, useCallback, useEffect } from "react";
 import { AbsoluteSpinner } from "@/components/pageComponents/spinnerLoadingComponent";
 import { useRouter } from "next/navigation";
-
+import { SiweMessage } from "siwe";
 import { connect } from "wagmi/actions";
 import { InjectedConnector } from "wagmi/connectors/injected";
-import { useAccount, useContractRead } from "wagmi";
+import { useAccount, useContractRead, useNetwork, useSignMessage } from "wagmi";
 import { getContractAbiAndAddress } from "@/services/smartcontractUtils";
 import { Abi, Narrow } from "viem";
+import { signIn } from "next-auth/react";
 
 interface UserAuthFormProps extends HTMLAttributes<HTMLDivElement> {}
 
 export function UserSigninForm({ className, ...props }: UserAuthFormProps) {
+  const { chain } = useNetwork();
   const errorAddress =
     "0x0000000000000000000000000000000000000000000000000000000000000000";
   const router = useRouter();
@@ -35,8 +37,34 @@ export function UserSigninForm({ className, ...props }: UserAuthFormProps) {
     address: `0x${string}`;
   }>();
 
+  const { signMessageAsync } = useSignMessage();
+
+  const handleLogin = async () => {
+    try {
+      const message = new SiweMessage({
+        domain: window.location.host,
+        address: address,
+        statement: "Sign in with Ethereum to the app.",
+        uri: window.location.origin,
+        version: "1",
+        chainId: chain?.id,
+      });
+      const signature = await signMessageAsync({
+        message: message.prepareMessage(),
+      });
+      signIn("credentials", {
+        message: JSON.stringify(message),
+        redirect: true,
+        signature,
+        callbackUrl: "/userMainPage",
+      });
+    } catch (error) {
+      window.alert(error);
+    }
+  };
+
   // Call read function "getRole" from smart contract
-  const { data } = useContractRead({
+  useContractRead({
     address: contractInfo?.address,
     abi: contractInfo?.abi,
     functionName: "getRole",
@@ -44,7 +72,9 @@ export function UserSigninForm({ className, ...props }: UserAuthFormProps) {
     account: address,
     onSuccess: (data) => {
       if (data !== errorAddress) {
-        router.push("/userMainPage");
+        handleLogin();
+        // Redirect to user main page
+        // router.push("/userMainPage");
         setIsLoading(false);
         return;
       }
@@ -61,15 +91,8 @@ export function UserSigninForm({ className, ...props }: UserAuthFormProps) {
         setIsLoading(true);
       })
       .catch(() => {
-        // If the user is already connected to Metamask, try the
-        if (data !== errorAddress) {
-          console.log(data);
-          console.log("User is registered.");
-          router.push("/userMainPage");
-        }
         console.log("User is not registered");
       });
-    setIsLoading(false);
     return;
   };
 

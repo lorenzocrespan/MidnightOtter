@@ -5,8 +5,7 @@ import { useSelectedLayoutSegment, useRouter } from "next/navigation";
 // Import utils and types
 import { MainNavItem } from "@/types";
 import { cn } from "@/lib/utils";
-// Wagmi imports
-import { disconnect } from "wagmi/actions";
+import { signOut } from "next-auth/react";
 
 interface MainNavProps {
   items?: MainNavItem[];
@@ -26,11 +25,8 @@ export function LogNav({ items }: MainNavProps) {
               href={item.disabled ? "#" : item.href}
               {...(item.title === "Logout"
                 ? {
-                    onClick: (e) => {
-                      e.preventDefault();
-                      disconnect().then(() => {
-                        router.push("/");
-                      });
+                    onClick: () => {
+                      signOut();
                     },
                   }
                 : {})}

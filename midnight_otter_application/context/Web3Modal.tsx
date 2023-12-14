@@ -10,7 +10,7 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
 );
 
 const config = createConfig({
-  autoConnect: true,
+  autoConnect: false,
   connectors: [
     new InjectedConnector({
       chains,
@@ -21,5 +21,11 @@ const config = createConfig({
 });
 
 export function Web3Modal({ children }: { children: React.ReactNode }) {
-  return <WagmiConfig config={config}>{children}</WagmiConfig>;
+  return (
+    <WagmiConfig config={config}>
+      
+        {children}
+
+    </WagmiConfig>
+  );
 }

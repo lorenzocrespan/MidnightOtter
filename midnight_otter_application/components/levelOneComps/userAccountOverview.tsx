@@ -1,9 +1,24 @@
 "use client";
+import { connect } from "wagmi/actions";
+import { InjectedConnector } from "wagmi/connectors/injected";
 import Image from "next/image";
 // Wagmi imports
 import { useAccount, useNetwork, useBalance } from "wagmi";
 
 export default function UserAccountOverviewComponent() {
+  connect({
+    connector: new InjectedConnector(),
+  })
+    .then(() => {
+      console.log("User is connected to Metamask.");
+    })
+    .catch(() => {
+      console.log("User is not registered");
+    });
+
+  const { address } = useAccount();
+  console.log("[userAccountOverview] Address: ", address);
+
   /**
    * @description Variable that stores the state of the user's account.
    * It is an object that contains the user's address, the network they are
@@ -14,11 +29,6 @@ export default function UserAccountOverviewComponent() {
     network: useNetwork(),
     balance: useBalance({ address: useAccount().address }),
   };
-
-  // <img
-  //   src={"https://avatar.iran.liara.run/public/37"}
-  //
-  // />;
 
   console.log(
     "[userAccountOverview] Data about user, network and contract: ",
