@@ -3,7 +3,7 @@ import { Metadata } from "next";
 // React components imports
 import { Icons } from "@/components/baseComponents/icons";
 import { TextLink } from "@/components/baseComponents/textLinks/textLink";
-import { UserSigninForm } from "@/components/modalComponents/formsModal/authModal/userSigninForm";
+import { UserSigninForm } from "@/components/levelOneComps/form/authModal/userSigninForm";
 
 // Update the metadata for the page.
 export const metadata: Metadata = {

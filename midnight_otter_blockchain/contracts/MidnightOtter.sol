@@ -119,6 +119,7 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         string name;
         string surname;
         address user;
+        uint256 requestId;
     }
 
     // Mapping of the list of users who have requested a role.
@@ -141,7 +142,7 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         string memory surname
     ) public {
         uint256 requestId = _nextRequestRoleId++;
-        requestRole[requestId] = RequestRole(role, name, surname, msg.sender);
+        requestRole[requestId] = RequestRole(role, name, surname, msg.sender, requestId);
     }
 
     /**
