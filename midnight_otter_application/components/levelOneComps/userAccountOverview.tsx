@@ -3,7 +3,11 @@ import { connect } from "wagmi/actions";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import Image from "next/image";
 // Wagmi imports
-import { useAccount, useNetwork, useBalance } from "wagmi";
+import { useAccount, useNetwork, useBalance, useContractRead } from "wagmi";
+import { useCallback, useEffect, useState } from "react";
+import { getContractAbiAndAddress } from "@/services/smartcontractUtils";
+import { Abi, Narrow } from "viem";
+import Web3 from "web3";
 
 export default function UserAccountOverviewComponent() {
   connect({
@@ -16,8 +20,42 @@ export default function UserAccountOverviewComponent() {
       console.log("User is not registered");
     });
 
-  const { address } = useAccount();
-  console.log("[userAccountOverview] Address: ", address);
+  const fetchData = useCallback(async () => {
+    const contractInfo = await getContractAbiAndAddress();
+    setContractInfo(contractInfo);
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const [contractInfo, setContractInfo] = useState<{
+    abi: Narrow<readonly unknown[] | Abi>;
+    address: `0x${string}`;
+  }>();
+
+  const { address, isConnected } = useAccount();
+
+  function matchRole(role: string) {
+    switch (role) {
+      case Web3.utils.sha3("MANTAINER_ROLE") as string:
+        return "Mantainer";
+      case Web3.utils.sha3("USER_ROLE") as string:
+        return "User";
+      case Web3.utils.sha3("ADMIN_ROLE") as string:
+        return "Admin";
+      default:
+        return "Role not found";
+    }
+  }
+
+  const role = useContractRead({
+    address: contractInfo?.address,
+    abi: contractInfo?.abi,
+    functionName: "getRole",
+    enabled: isConnected,
+    account: address,
+  });
 
   /**
    * @description Variable that stores the state of the user's account.
@@ -28,12 +66,9 @@ export default function UserAccountOverviewComponent() {
     account: useAccount(),
     network: useNetwork(),
     balance: useBalance({ address: useAccount().address }),
+    role: matchRole(role?.data as string),
+    contract: contractInfo?.address,
   };
-
-  console.log(
-    "[userAccountOverview] Data about user, network and contract: ",
-    dataUserBlockchain
-  );
 
   return (
     <div className="flex h-auto justify-between rounded-md p-12">
@@ -64,8 +99,7 @@ export default function UserAccountOverviewComponent() {
             <tr>
               <td className="text-xl">Ruolo:</td>
               <td className="cursor-pointer px-5 duration-500 ease-out hover:text-blue-500">
-                TODO: RuoloUtente form contract (es. Esperto, Amministratore,
-                Pubblico ministero, etc.)
+                {dataUserBlockchain?.role}
               </td>
             </tr>
           </tbody>
@@ -99,8 +133,7 @@ export default function UserAccountOverviewComponent() {
             <tr>
               <td className="text-xl">Contratto di riferimento: </td>
               <td className="cursor-pointer px-5 duration-500 ease-out hover:text-blue-500">
-                TODO: IndirizzoContratto (es.
-                0x1234567890abcdef1234567890abcdef12345678)
+                {dataUserBlockchain?.contract}
               </td>
             </tr>
           </tbody>

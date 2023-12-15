@@ -18,7 +18,6 @@ export function UserSigninForm({ className, ...props }: UserAuthFormProps) {
   const { chain } = useNetwork();
   const errorAddress =
     "0x0000000000000000000000000000000000000000000000000000000000000000";
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const { address, isConnected } = useAccount();
