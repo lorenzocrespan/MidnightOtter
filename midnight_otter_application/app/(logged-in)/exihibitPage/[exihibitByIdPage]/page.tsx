@@ -44,7 +44,7 @@ export default function Page({
                 </button>
               </div>
               <div className="flex gap-2">
-                <p>Scarica l'etichetta QR</p>
+                <p>Scarica l&apos;etichetta QR</p>
                 <button className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700">
                   QR
                 </button>
