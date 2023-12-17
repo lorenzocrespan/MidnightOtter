@@ -5,7 +5,10 @@ import {
   LucideProps,
   Loader2,
   Pizza,
+  FileUp,
   Dot,
+  File,
+  X,
   Accessibility,
   type Icon as LucideIcon,
 } from "lucide-react";
@@ -20,6 +23,9 @@ export const Icons = {
   spinner: Loader2,
   pizza: Pizza,
   dot: Dot,
+  fileUp: FileUp,
+  file: File,
+  close: X,
   accessibility: Accessibility,
   gitHub: ({ ...props }: LucideProps) => (
     <svg
