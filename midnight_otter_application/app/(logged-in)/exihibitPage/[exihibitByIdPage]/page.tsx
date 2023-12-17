@@ -1,5 +1,6 @@
 import { QR } from "@/components/baseComponents/qr";
 import ExpertRelation from "@/components/levelOneComps/addExpertRelation";
+import DownloadCase from "@/components/levelOneComps/downloadPDF";
 
 export default function Page({
   params,
@@ -7,9 +8,9 @@ export default function Page({
   params: { exihibitByIdPage: string };
 }) {
   // <div>My Post: {params.exihibitByIdPage}</div>
+  // <ExpertRelation />
   return (
     <div>
-      <ExpertRelation />
       <div className="container mx-auto flex h-auto flex-col justify-between gap-5 rounded-md  p-10">
         <div className="flex flex-row">
           <div className="basis-2/3 py-5 text-2xl font-semibold">
@@ -42,6 +43,7 @@ export default function Page({
                 <button className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700">
                   PDF
                 </button>
+                <DownloadCase />
               </div>
               <div className="flex gap-2">
                 <p>Scarica l&apos;etichetta QR</p>
