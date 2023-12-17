@@ -1,6 +1,8 @@
 import { QR } from "@/components/baseComponents/qr";
 import ExpertRelation from "@/components/levelOneComps/addExpertRelation";
 import DownloadCase from "@/components/levelOneComps/downloadPDF";
+import DownloadSVG from "@/components/levelOneComps/downloadSVG";
+
 
 export default function Page({
   params,
@@ -50,6 +52,7 @@ export default function Page({
                 <button className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700">
                   QR
                 </button>
+                <DownloadSVG />
               </div>
             </div>
           </div>

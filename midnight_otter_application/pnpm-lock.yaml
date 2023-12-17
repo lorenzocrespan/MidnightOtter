@@ -17,6 +17,9 @@ dependencies:
   '@react-three/fiber':
     specifier: ^8.15.11
     version: 8.15.12(react-dom@18.2.0)(react@18.2.0)(three@0.152.2)
+  '@svgdotjs/svg.js':
+    specifier: ^3.2.0
+    version: 3.2.0
   '@types/node':
     specifier: 20.10.4
     version: 20.10.4
@@ -1253,6 +1256,10 @@ packages:
       react: '>= 16.3.0'
     dependencies:
       react: 18.2.0
+    dev: false
+
+  /@svgdotjs/svg.js@3.2.0:
+    resolution: {integrity: sha512-Tr8p+QVP7y+QT1GBlq1Tt57IvedVH8zCPoYxdHLX0Oof3a/PqnC/tXAkVufv1JQJfsDHlH/UrjcDfgxSofqSNA==}
     dev: false
 
   /@swc/helpers@0.4.14:
