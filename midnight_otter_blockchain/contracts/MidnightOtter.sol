@@ -6,15 +6,36 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
-    /**
-     * @notice Role definition for the contract.
-     *
-     */
     bytes32 public constant MANTAINER_ROLE = keccak256("MANTAINER_ROLE");
     bytes32 public constant PUBLIC_ADMINISTRATOR_ROLE =
         keccak256("PUBLIC_ADMINISTRATOR_ROLE");
     bytes32 public constant EXPERT_ROLE = keccak256("EXPERT_ROLE");
     bytes32 public constant LAWYER_ROLE = keccak256("LAWYER_ROLE");
+
+    /**
+     * @dev Structure of the request of the role.
+     *
+     * @param requestId Id of the request.
+     * @param role Role to request (keccak256 of the role name).
+     * @param name Name of the user.
+     * @param surname Surname of the user.
+     * @param user User wallet address.
+     *
+     */
+    struct RequestRole {
+        uint256 requestId;
+        bytes32 role;
+        string name;
+        string surname;
+        address user;
+    }
+
+    // Mapping of the list of users who have requested a role,
+    // given a request id, return the request.
+    mapping(uint256 => RequestRole) private requestRoleMap;
+
+    // Counter of the request id.
+    uint256 private _nextRequestRole;
 
     uint256 private _nextTokenId;
 
@@ -102,36 +123,23 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
     mapping(uint256 => address[]) public sharedExihibit;
 
     /**
-     * @notice Constructor of the contract.
+     * @dev Constructor of the contract.
      *
      * @param mantainer Address of the mantainer of the contract.
      *
      */
     constructor(address mantainer) ERC721("MidnightOtter", "MOK") {
         _grantRole(MANTAINER_ROLE, mantainer);
+        // TODO: For testing purpose, the mantainer is also the public administrator.
         _grantRole(PUBLIC_ADMINISTRATOR_ROLE, mantainer);
     }
 
-    // The following functions are required to manage the roles list of the contract.
-
-    struct RequestRole {
-        bytes32 role;
-        string name;
-        string surname;
-        address user;
-        uint256 requestId;
-    }
-
-    // Mapping of the list of users who have requested a role.
-    // Given a request id, return the request.
-    mapping(uint256 => RequestRole) private requestRole;
-
-    uint256 private _nextRequestRoleId;
+    // The following functions are required to manage the roles of the contract.
 
     /**
-     * @notice Function to request a role.
+     * @dev Function to request a role.
      *
-     * @param role Role to request. (64-character hexadecimal string. E.g. 0x7465737400000000000000000000000000000000000000000000000000000000)
+     * @param role Role to request (keccak256 of the role name).
      * @param name Name of the user.
      * @param surname Surname of the user.
      *
@@ -141,79 +149,84 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         string memory name,
         string memory surname
     ) public {
-        uint256 requestId = _nextRequestRoleId++;
-        requestRole[requestId] = RequestRole(role, name, surname, msg.sender, requestId);
+        // Check if the user has already requested the role.
+        if (getRoleByAddress(msg.sender) != 0x00) {
+            revert("MidnightOtter: The user has already requested the role.");
+        }
+        // Increment the counter of the request id.
+        uint256 requestId = _nextRequestRole++;
+        // Add the request to the list of requests.
+        requestRoleMap[requestId] = RequestRole(
+            requestId,
+            role,
+            name,
+            surname,
+            msg.sender
+        );
     }
 
     /**
-     * @notice Function to return the request in pending.
+     * @dev Function to get the list of the requests.
      *
      */
     function getRequestRoleList() public view returns (RequestRole[] memory) {
+        // Create a list of requests.
         RequestRole[] memory requestRoleList = new RequestRole[](
-            _nextRequestRoleId
+            _nextRequestRole
         );
-        for (uint256 i = 0; i < _nextRequestRoleId; i++) {
-            requestRoleList[i] = requestRole[i];
+        // Add the requests to the list of requests.
+        for (uint256 i = 0; i < _nextRequestRole; i++) {
+            requestRoleList[i] = requestRoleMap[i];
         }
         return requestRoleList;
     }
 
     /**
-     * @notice Function to grant a role, mantainer and public administrator only can call this function.
+     * @dev Function to grant a role, mantainer and public administrator only can call this function.
      *
      * @param requestId Id of the request.
      *
      */
-    function acceptRequestRole(uint256 requestId) public onlyRole(PUBLIC_ADMINISTRATOR_ROLE) {
-        _grantRole(requestRole[requestId].role, requestRole[requestId].user);
-        delete requestRole[requestId];
-    }
-
-    /**
-     * @notice Function to reject a role, mantainer and public administrator only can call this function.
-     *
-     * @param requestId Id of the request.
-     *
-     */
-    function rejectRequestRole(uint256 requestId) public onlyRole(PUBLIC_ADMINISTRATOR_ROLE) {
-        delete requestRole[requestId];
-    }
-
-    // The following functions are required to manage the roles of the contract.
-
-    /**
-     * @notice Function to switch the role of the user.
-     *
-     * @param role Role to grant.
-     * @param user User to grant the role.
-     *
-     */
-    function switchRole(bytes32 role, address user) public onlyRole(PUBLIC_ADMINISTRATOR_ROLE) {
-        // Check if the user has the role
-        require(
-            hasRole(role, user),
-            "MidnightOtter: The user doesn't have the role."
+    function acceptRequestRole(
+        uint256 requestId
+    ) public onlyRole(PUBLIC_ADMINISTRATOR_ROLE) {
+        // Grant the role.
+        _grantRole(
+            requestRoleMap[requestId].role,
+            requestRoleMap[requestId].user
         );
-        // Revoke the role
-        _revokeRole(role, user);
-        // Grant the role
-        _grantRole(role, user);
+        // Delete the request.
+        delete requestRoleMap[requestId];
     }
 
     /**
-     * @notice Function to return the role of the user.
+     * @dev Function to reject a role, mantainer and public administrator only can call this function.
      *
-     * @return Role of the user.
+     * @param requestId Id of the request.
+     *
      */
-    function getRole() public view returns (bytes32) {
-        if (hasRole(MANTAINER_ROLE, msg.sender)) {
+    function rejectRequestRole(
+        uint256 requestId
+    ) public onlyRole(PUBLIC_ADMINISTRATOR_ROLE) {
+        // Delete the request.
+        delete requestRoleMap[requestId];
+    }
+
+    /**
+     * @dev Function to get the role of the user.
+     *
+     * @param user User to get the role.
+     * @return Role of the user (keccak256 of the role name).
+     *
+     */
+    function getRoleByAddress(address user) public view returns (bytes32) {
+        if (hasRole(MANTAINER_ROLE, user)) {
             return MANTAINER_ROLE;
-        } else if (hasRole(PUBLIC_ADMINISTRATOR_ROLE, msg.sender)) {
+        } else if (hasRole(PUBLIC_ADMINISTRATOR_ROLE, user)) {
             return PUBLIC_ADMINISTRATOR_ROLE;
-        } else if (hasRole(EXPERT_ROLE, msg.sender)) {
+        } else if (hasRole(EXPERT_ROLE, user)) {
             return EXPERT_ROLE;
-        } else if (hasRole(LAWYER_ROLE, msg.sender)) {
+        } else if (hasRole(LAWYER_ROLE, user)) {
             return LAWYER_ROLE;
         } else {
             return 0x00;

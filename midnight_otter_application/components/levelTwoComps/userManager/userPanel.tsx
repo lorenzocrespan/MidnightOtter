@@ -40,7 +40,6 @@ export function UserManagerPanel() {
     abi: Narrow<readonly unknown[] | Abi>;
     address: `0x${string}`;
   }>();
-
   // Call read function "getRole" from smart contract
   const { data } = useContractRead({
     address: contractInfo?.address,

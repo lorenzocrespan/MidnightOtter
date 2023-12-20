@@ -1,5 +1,5 @@
 {
-  "address": "0x4249aDd3f91c849b6221f187f176bFA72eb95BAE",
+  "address": "0x510Cc378082CcA3A6218E074C084DDb81146274d",
   "abi": [
     {
       "inputs": [
@@ -653,6 +653,11 @@
         {
           "components": [
             {
+              "internalType": "uint256",
+              "name": "requestId",
+              "type": "uint256"
+            },
+            {
               "internalType": "bytes32",
               "name": "role",
               "type": "bytes32"
@@ -682,8 +687,14 @@
       "type": "function"
     },
     {
-      "inputs": [],
-      "name": "getRole",
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getRoleAdmin",
       "outputs": [
         {
           "internalType": "bytes32",
@@ -697,12 +708,12 @@
     {
       "inputs": [
         {
-          "internalType": "bytes32",
-          "name": "role",
-          "type": "bytes32"
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
         }
       ],
-      "name": "getRoleAdmin",
+      "name": "getRoleByAddress",
       "outputs": [
         {
           "internalType": "bytes32",
@@ -1092,24 +1103,6 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bytes32",
-          "name": "role",
-          "type": "bytes32"
-        },
-        {
-          "internalType": "address",
-          "name": "user",
-          "type": "address"
-        }
-      ],
-      "name": "switchRole",
-      "outputs": [],
-      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
