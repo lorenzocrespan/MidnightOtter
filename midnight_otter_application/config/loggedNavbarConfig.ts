@@ -27,11 +27,6 @@ export const loggedPageLeftConfig: BaseNavbarType = {
       disabled: false,
     },
     {
-      title: "Upload page",
-      href: "/uploadpage",
-      disabled: false,
-    },
-    {
       title: "Search page",
       href: "/searchpage",
       disabled: false,
