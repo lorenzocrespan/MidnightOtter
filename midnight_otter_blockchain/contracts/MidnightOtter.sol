@@ -36,6 +36,7 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
 
     // Counter of the request id.
     uint256 private _nextRequestRole;
+    uint256 private _pendingRequestCount;
 
     uint256 private _nextTokenId;
 
@@ -153,16 +154,17 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         if (getRoleByAddress(msg.sender) != 0x00) {
             revert("MidnightOtter: The user has already requested the role.");
         }
-        // Increment the counter of the request id.
-        uint256 requestId = _nextRequestRole++;
         // Add the request to the list of requests.
-        requestRoleMap[requestId] = RequestRole(
-            requestId,
+        requestRoleMap[_nextRequestRole] = RequestRole(
+            _nextRequestRole,
             role,
             name,
             surname,
             msg.sender
         );
+        // Increment the counter of the request id and the counter of the pending requests.
+        _nextRequestRole++;
+        _pendingRequestCount++;
     }
 
     /**
@@ -170,13 +172,20 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
      *
      */
     function getRequestRoleList() public view returns (RequestRole[] memory) {
-        // Create a list of requests.
+        // Create the list of pending requests.
         RequestRole[] memory requestRoleList = new RequestRole[](
-            _nextRequestRole
+            _pendingRequestCount
         );
-        // Add the requests to the list of requests.
+        // Array index for the pending requests list.
+        uint256 pendingRequestId = 0;
+        // Add the requests to the list of pending requests.
         for (uint256 i = 0; i < _nextRequestRole; i++) {
-            requestRoleList[i] = requestRoleMap[i];
+            if (
+                requestRoleMap[i].user != address(0) &&
+                pendingRequestId < _pendingRequestCount
+            ) {
+                requestRoleList[pendingRequestId++] = requestRoleMap[i];
+            }
         }
         return requestRoleList;
     }
@@ -197,6 +206,8 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         );
         // Delete the request.
         delete requestRoleMap[requestId];
+        // Decrement the counter of the pending requests.
+        _pendingRequestCount--;
     }
 
     /**
@@ -210,6 +221,8 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
     ) public onlyRole(PUBLIC_ADMINISTRATOR_ROLE) {
         // Delete the request.
         delete requestRoleMap[requestId];
+        // Decrement the counter of the pending requests.
+        _pendingRequestCount--;
     }
 
     /**

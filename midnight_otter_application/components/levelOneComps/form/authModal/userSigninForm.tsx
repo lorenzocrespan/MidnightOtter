@@ -66,14 +66,13 @@ export function UserSigninForm({ className, ...props }: UserAuthFormProps) {
   useContractRead({
     address: contractInfo?.address,
     abi: contractInfo?.abi,
-    functionName: "getRole",
+    functionName: "getRoleByAddress",
     enabled: isConnected,
     account: address,
+    args: [address],
     onSuccess: (data) => {
       if (data !== errorAddress) {
         handleLogin();
-        // Redirect to user main page
-        // router.push("/userMainPage");
         setIsLoading(false);
         return;
       }

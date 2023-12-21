@@ -37,13 +37,16 @@ export default function UserAccountOverviewComponent() {
   const { address, isConnected } = useAccount();
 
   function matchRole(role: string) {
+    console.log(role);
     switch (role) {
-      case Web3.utils.sha3("MANTAINER_ROLE") as string:
+      case Web3.utils.sha3("MANTAINER_ROLE"):
         return "Mantainer";
-      case Web3.utils.sha3("USER_ROLE") as string:
-        return "User";
-      case Web3.utils.sha3("ADMIN_ROLE") as string:
-        return "Admin";
+      case Web3.utils.keccak256("PUBLIC_ADMINISTRATOR_ROLE"):
+        return "Public Administrator";
+      case Web3.utils.keccak256("EXPERT_ROLE"):
+        return "Expert";
+      case Web3.utils.keccak256("LAWYER_ROLE"):
+        return "Lawyer";
       default:
         return "Role not found";
     }
@@ -52,9 +55,10 @@ export default function UserAccountOverviewComponent() {
   const role = useContractRead({
     address: contractInfo?.address,
     abi: contractInfo?.abi,
-    functionName: "getRole",
+    functionName: "getRoleByAddress",
     enabled: isConnected,
     account: address,
+    args: [address],
   });
 
   /**

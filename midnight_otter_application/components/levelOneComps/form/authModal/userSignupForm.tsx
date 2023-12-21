@@ -65,10 +65,7 @@ export default function UserSignupForm({
           // function addRequestRoleList(bytes32 role, string memory name, string memory surname)
           writeAsync({
             args: [
-              Web3.utils.padRight(
-                Web3.utils.asciiToHex(dataRequestedAccount.role),
-                64
-              ),
+              Web3.utils.keccak256(dataRequestedAccount.role),
               dataRequestedAccount.name,
               dataRequestedAccount.surname,
             ],

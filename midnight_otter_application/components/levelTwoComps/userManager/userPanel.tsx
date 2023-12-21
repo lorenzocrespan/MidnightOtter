@@ -64,6 +64,7 @@ export function UserManagerPanel() {
   });
 
   const approveAction = (isApprove: boolean, idRequest: number) => {
+    console.log(idRequest);
     if (isApprove) {
       acceptFunction
         .writeAsync({
@@ -97,18 +98,24 @@ export function UserManagerPanel() {
       </div>
       <div className="flex flex-col gap-5">
         {Array.isArray(data) && data.length > 0 ? (
-          data.map((user: any) => (
-            <UserRequestManagerCard
-              user={{
-                name: user.name,
-                surname: user.surname,
-                user: user.user,
-                role: user.role,
-              }}
-              approveAction={approveAction}
-              key={user.user}
-            />
-          ))
+          data.map(
+            (user: any) => (
+              console.log(user),
+              (
+                <UserRequestManagerCard
+                  user={{
+                    name: user.name,
+                    surname: user.surname,
+                    user: user.user,
+                    role: user.role,
+                    requestId: user.requestId,
+                  }}
+                  approveAction={approveAction}
+                  key={user.user}
+                />
+              )
+            )
+          )
         ) : (
           <div className="flex flex-col items-center gap-4">
             <div className="flex w-full gap-5 text-lg">
