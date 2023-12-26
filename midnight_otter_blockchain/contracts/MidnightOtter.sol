@@ -78,6 +78,14 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
      *  @param chainCustody List of events for the chain of custody.
      */
     struct Exihibit {
+        ExihibitInfo exhibitInformation;
+        // List of URI for the expert reports
+        string[] expertReports;
+        // List of events for the chain of custody
+        ChainCustody[] chainCustody;
+    }
+
+    struct ExihibitInfo {
         // Properties of the case
         uint256 caseNumber;
         string caseName;
@@ -94,10 +102,6 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         uint256 seizedEpochTime;
         // Properties of the object status
         ObjectStatusValue objectStatus;
-        // List of URI for the expert reports
-        string[] expertReports;
-        // List of events for the chain of custody
-        // ChainCustody[] chainCustody;
     }
 
     /**
@@ -133,6 +137,7 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         _grantRole(MANTAINER_ROLE, mantainer);
         // TODO: For testing purpose, the mantainer is also the public administrator.
         _grantRole(PUBLIC_ADMINISTRATOR_ROLE, mantainer);
+        _grantRole(EXPERT_ROLE, mantainer);
     }
 
     // The following functions are required to manage the roles of the contract.
@@ -248,24 +253,24 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
 
     // The following functions are required to manage the Exihibit of the case.
 
-    // Valid: [12,"pippo",0,"pippo",11,1,1,"pippo","pippo",111,0,[""],[10,"a","a","transazione"]]
+    // Valid: [12,"pippo",0,"pippo",11,1,1,"pippo","pippo",111,0]
     function safeMint(
         address to,
-        Exihibit memory initialTokenStruct
+        ExihibitInfo memory initialTokenStruct
     ) public onlyRole(EXPERT_ROLE) {
         uint256 tokenId = _nextTokenId++;
         _safeMint(to, tokenId);
-        caseProperties[tokenId] = initialTokenStruct;
-    }
-
-    function unsafeMint(address to, Exihibit memory initialTokenStruct) public {
-        uint256 tokenId = _nextTokenId++;
-        _mint(to, tokenId);
-        caseProperties[tokenId] = initialTokenStruct;
-    }
-
-    function getActualTokenId() public view returns (uint256) {
-        return _nextTokenId;
+        Exihibit storage tokenStruct = caseProperties[tokenId];
+        tokenStruct.exhibitInformation = initialTokenStruct;
+        tokenStruct.expertReports = new string[](0);
+        tokenStruct.chainCustody.push(
+            ChainCustody(
+                block.timestamp,
+                initialTokenStruct.submitterOfficer,
+                initialTokenStruct.submitterOfficer,
+                "Seized"
+            )
+        );
     }
 
     // The following functions are required to interact with the Exihibit of the case.
