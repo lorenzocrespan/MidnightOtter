@@ -8,7 +8,8 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
     // The following constants are required to manage the roles of the contract.
     bytes32 public constant MANTAINER_ROLE = keccak256("MANTAINER_ROLE");
-    bytes32 public constant PUBLIC_ADMINISTRATOR_ROLE = keccak256("PUBLIC_ADMINISTRATOR_ROLE");
+    bytes32 public constant PUBLIC_ADMINISTRATOR_ROLE =
+        keccak256("PUBLIC_ADMINISTRATOR_ROLE");
     bytes32 public constant EXPERT_ROLE = keccak256("EXPERT_ROLE");
     bytes32 public constant LAWYER_ROLE = keccak256("LAWYER_ROLE");
 
@@ -271,12 +272,7 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         tokenStruct.exhibitInformation = initialTokenStruct;
         tokenStruct.expertReports = new string[](0);
         tokenStruct.chainCustody.push(
-            ChainCustody(
-                block.timestamp,
-                msg.sender,
-                msg.sender,
-                "Seized"
-            )
+            ChainCustody(block.timestamp, msg.sender, msg.sender, "Seized")
         );
     }
 
@@ -298,8 +294,6 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         }
         return cases;
     }
-
-    // The following functions are required to manage the sharing of the Exihibit of the case.
 
     function grantShareExihibit(
         uint256 tokenId,
@@ -349,8 +343,14 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         }
     }
 
+    /**
+     * @dev Function to revoke shared access to an exihibit.
+     * 
+     * @param tokenId Id of the exihibit.
+     * 
+     */
     function unshareExihibit(uint256 tokenId) public onlyRole(EXPERT_ROLE) {
-        // Check if the sender is the owner of the case
+        // Check if the sender is the owner of the exihibit
         require(
             ownerOf(tokenId) == msg.sender,
             "MidnightOtter: Only the owner of the case can unshare the exihibit."
@@ -361,95 +361,183 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         }
     }
 
-    function shareOf(uint256 tokenId, address user) public view returns (bool) {
+    /**
+     * @dev Function to check if a user has access to an exihibit.
+     *
+     * @param tokenId Id of the exihibit.
+     * @param userAddress  Address of the user.
+     *
+     */
+    function shareOf(
+        uint256 tokenId,
+        address userAddress
+    ) public view returns (bool) {
         // Check if the user is in the list of users
         for (uint256 i = 0; i < sharedExihibit[tokenId].length; i++) {
-            if (sharedExihibit[tokenId][i] == user) {
+            if (sharedExihibit[tokenId][i] == userAddress) {
                 return true;
             }
         }
         return false;
     }
 
-    // The following functions are required to manage the expert reports of the Exihibit of the case.
-
-    function addExpertReport(
-        uint256 tokenId,
-        string memory expertReport
-    ) public onlyRole(EXPERT_ROLE) {
-        // Check if the sender is the owner of the case
-        require(
-            ownerOf(tokenId) == msg.sender || shareOf(tokenId, msg.sender),
-            "MidnightOtter: Only the owner of the case or a shared user can add an expert report."
-        );
-        // Add the expert report to the list of expert reports
-        caseProperties[tokenId].expertReports.push(expertReport);
-    }
-
-    // The following functions are required to manage the transfer of the Exihibit of the case.
-
+    /**
+     * @dev Function to request a transfer for an exihibit.
+     *
+     * @param tokenId Id of the exihibit.
+     * @param senderAddress Address of the entity performing the release.
+     * @param receiverAddress Address of the entity receiving the release.
+     *
+     */
     function requestTrasfer(
         uint256 tokenId,
-        address releasedBy,
-        address receivedBy
+        address senderAddress,
+        address receiverAddress
     ) public onlyRole(EXPERT_ROLE) {
-        // Check if the sender is the owner of the case
+        // Check if the sender is the owner of the exihibit
         require(
             ownerOf(tokenId) == msg.sender,
             "MidnightOtter: Only the owner of the case can request a transfer."
         );
-        // Update exihibit transfer request address (receiver of the transfer, not the sender)
-        caseProperties[tokenId].requestedTransferReceiver = receivedBy;
-        transferRequests[caseProperties[tokenId].requestedTransferReceiver].push(tokenId);
+        // Clean the previous transfer request for the exihibit
+        if (caseProperties[tokenId].requestedTransferReceiver != address(0)) {
+            delete transferRequests[
+                caseProperties[tokenId].requestedTransferReceiver
+            ];
+        }
+        // Revoke shared access to the exihibit
+        unshareExihibit(tokenId);
+        // Update exihibit information about the transfer request
+        caseProperties[tokenId].requestedTransferReceiver = receiverAddress;
+        // Add the exihibit to the list of exihibit transfer requests for the receiver
+        transferRequests[caseProperties[tokenId].requestedTransferReceiver]
+            .push(tokenId);
         // Add the event to the chain of custody
-        caseProperties[tokenId].chainCustody.push(
-            ChainCustody(
-                block.timestamp,
-                releasedBy,
-                receivedBy,
-                "Requested"
-            )
+        updateCustodyChain(
+            tokenId,
+            senderAddress,
+            receiverAddress,
+            "Requested exihibit transfer"
         );
     }
 
+    /**
+     * @dev Function to accept a transfer request for an exihibit.
+     *
+     * @param tokenId Id of the exihibit.
+     * @param responsePerformer Address of the entity performing the accept request.
+     * @param requestPerformer Address of the entity receiving the accept request.
+     *
+     */
     function acceptRequestTrasfer(
         uint256 tokenId,
-        address releasedBy,
-        address receivedBy
+        address responsePerformer,
+        address requestPerformer
     ) public onlyRole(EXPERT_ROLE) {
-        // Check if the receiver of the transfer is the sender
+        // Check if the receiver of the transfer is the sender of the response
         require(
             caseProperties[tokenId].requestedTransferReceiver == msg.sender,
             "MidnightOtter: Only the user who receive the transfer can accept it."
         );
+        // Trasfer the ownership of the exihibit to the receiver
+        _transfer(requestPerformer, responsePerformer, tokenId);
+        // Update exihibit information about the transfer request
+        caseProperties[tokenId].requestedTransferReceiver = address(0);
+        // Clean the transfer request for the exihibit
+        delete transferRequests[
+            caseProperties[tokenId].requestedTransferReceiver
+        ];
         // Add the event to the chain of custody
-        caseProperties[tokenId].chainCustody.push(
-            ChainCustody(
-                block.timestamp,
-                releasedBy,
-                receivedBy,
-                "Accepted"
-            )
+        updateCustodyChain(
+            tokenId,
+            responsePerformer,
+            requestPerformer,
+            "Accepted exihibit transfer"
         );
     }
 
+    /**
+     * @dev Function to reject a transfer request for an exihibit.
+     *
+     * @param tokenId Id of the exihibit.
+     * @param responsePerformer Address of the entity performing the accept request.
+     * @param requestPerformer Address of the entity receiving the accept request.
+     *
+     */
     function rejectRequestTrasfer(
         uint256 tokenId,
-        address releasedBy,
-        address receivedBy
+        address responsePerformer,
+        address requestPerformer
     ) public onlyRole(EXPERT_ROLE) {
-        // Check if the sender is the owner of the case
+        // Check if the receiver of the transfer is the sender of the response
         require(
             caseProperties[tokenId].requestedTransferReceiver == msg.sender,
-            "MidnightOtter: Only the user who receive the transfer can reject it."
+            "MidnightOtter: Only the user who receive the transfer can accept it."
         );
+        // Update exihibit information about the transfer request
+        caseProperties[tokenId].requestedTransferReceiver = address(0);
+        // Clean the transfer request for the exihibit
+        delete transferRequests[
+            caseProperties[tokenId].requestedTransferReceiver
+        ];
+        // Add the event to the chain of custody
+        updateCustodyChain(
+            tokenId,
+            responsePerformer,
+            requestPerformer,
+            "Rejected exihibit transfer"
+        );
+    }
+
+    /**
+     * @dev Function to add an expert report to specific exihibit.
+     *
+     * @param tokenId Id of the exihibit.
+     * @param expertReportUri URI of the expert report.
+     *
+     */
+    function addExpertReportUri(
+        uint256 tokenId,
+        string memory expertReportUri
+    ) public onlyRole(EXPERT_ROLE) {
+        // Check if the sender is the owner of the case or a shared user
+        require(
+            ownerOf(tokenId) == msg.sender || shareOf(tokenId, msg.sender),
+            "MidnightOtter: Only the owner of the case or permitted users can add an expert report."
+        );
+        // Add expert report to the list of expert reports
+        caseProperties[tokenId].expertReports.push(expertReportUri);
+        // Add the event to the chain of custody
+        updateCustodyChain(
+            tokenId,
+            msg.sender,
+            address(0),
+            "Added expert report"
+        );
+    }
+
+    /**
+     * @dev Function to update the chain of custody of specific exihibit.
+     *
+     * @param tokenId Id of the exihibit.
+     * @param senderAddress Address of the entity performing the action.
+     * @param receiverAddress Address of the entity receiving the action.
+     * @param actionPerformed  Action performed on the exihibit.
+     *
+     */
+    function updateCustodyChain(
+        uint256 tokenId,
+        address senderAddress,
+        address receiverAddress,
+        string memory actionPerformed
+    ) private {
         // Add the event to the chain of custody
         caseProperties[tokenId].chainCustody.push(
             ChainCustody(
                 block.timestamp,
-                releasedBy,
-                receivedBy,
-                "Rejected"
+                senderAddress,
+                receiverAddress,
+                actionPerformed
             )
         );
     }
