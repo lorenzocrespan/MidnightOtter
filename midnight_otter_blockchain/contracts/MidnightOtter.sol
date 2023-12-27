@@ -6,9 +6,9 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
+    // The following constants are required to manage the roles of the contract.
     bytes32 public constant MANTAINER_ROLE = keccak256("MANTAINER_ROLE");
-    bytes32 public constant PUBLIC_ADMINISTRATOR_ROLE =
-        keccak256("PUBLIC_ADMINISTRATOR_ROLE");
+    bytes32 public constant PUBLIC_ADMINISTRATOR_ROLE = keccak256("PUBLIC_ADMINISTRATOR_ROLE");
     bytes32 public constant EXPERT_ROLE = keccak256("EXPERT_ROLE");
     bytes32 public constant LAWYER_ROLE = keccak256("LAWYER_ROLE");
 
@@ -78,11 +78,14 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
      *  @param chainCustody List of events for the chain of custody.
      */
     struct Exihibit {
+        // Properties of the case
         ExihibitInfo exhibitInformation;
         // List of URI for the expert reports
         string[] expertReports;
         // List of events for the chain of custody
         ChainCustody[] chainCustody;
+        // Requested transfer address
+        address requestedTransferReceiver;
     }
 
     struct ExihibitInfo {
@@ -114,8 +117,8 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
      */
     struct ChainCustody {
         uint256 timestamp;
-        string releasedBy;
-        string receivedBy;
+        address releasedBy;
+        address receivedBy;
         string action;
     }
 
@@ -126,6 +129,10 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
     // Mapping of the list of users who have access to the exihibit of the case
     // Given a token id, return the list of users
     mapping(uint256 => address[]) public sharedExihibit;
+
+    // Mapping of the list of exihibit transfer requests have a user as receiver
+    // Given a user address, return the list of token ids
+    mapping(address => uint256[]) public transferRequests;
 
     /**
      * @dev Constructor of the contract.
@@ -266,8 +273,8 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         tokenStruct.chainCustody.push(
             ChainCustody(
                 block.timestamp,
-                initialTokenStruct.submitterOfficer,
-                initialTokenStruct.submitterOfficer,
+                msg.sender,
+                msg.sender,
                 "Seized"
             )
         );
@@ -365,6 +372,87 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
     }
 
     // The following functions are required to manage the expert reports of the Exihibit of the case.
+
+    function addExpertReport(
+        uint256 tokenId,
+        string memory expertReport
+    ) public onlyRole(EXPERT_ROLE) {
+        // Check if the sender is the owner of the case
+        require(
+            ownerOf(tokenId) == msg.sender || shareOf(tokenId, msg.sender),
+            "MidnightOtter: Only the owner of the case or a shared user can add an expert report."
+        );
+        // Add the expert report to the list of expert reports
+        caseProperties[tokenId].expertReports.push(expertReport);
+    }
+
+    // The following functions are required to manage the transfer of the Exihibit of the case.
+
+    function requestTrasfer(
+        uint256 tokenId,
+        address releasedBy,
+        address receivedBy
+    ) public onlyRole(EXPERT_ROLE) {
+        // Check if the sender is the owner of the case
+        require(
+            ownerOf(tokenId) == msg.sender,
+            "MidnightOtter: Only the owner of the case can request a transfer."
+        );
+        // Update exihibit transfer request address (receiver of the transfer, not the sender)
+        caseProperties[tokenId].requestedTransferReceiver = receivedBy;
+        transferRequests[caseProperties[tokenId].requestedTransferReceiver].push(tokenId);
+        // Add the event to the chain of custody
+        caseProperties[tokenId].chainCustody.push(
+            ChainCustody(
+                block.timestamp,
+                releasedBy,
+                receivedBy,
+                "Requested"
+            )
+        );
+    }
+
+    function acceptRequestTrasfer(
+        uint256 tokenId,
+        address releasedBy,
+        address receivedBy
+    ) public onlyRole(EXPERT_ROLE) {
+        // Check if the receiver of the transfer is the sender
+        require(
+            caseProperties[tokenId].requestedTransferReceiver == msg.sender,
+            "MidnightOtter: Only the user who receive the transfer can accept it."
+        );
+        // Add the event to the chain of custody
+        caseProperties[tokenId].chainCustody.push(
+            ChainCustody(
+                block.timestamp,
+                releasedBy,
+                receivedBy,
+                "Accepted"
+            )
+        );
+    }
+
+    function rejectRequestTrasfer(
+        uint256 tokenId,
+        address releasedBy,
+        address receivedBy
+    ) public onlyRole(EXPERT_ROLE) {
+        // Check if the sender is the owner of the case
+        require(
+            caseProperties[tokenId].requestedTransferReceiver == msg.sender,
+            "MidnightOtter: Only the user who receive the transfer can reject it."
+        );
+        // Add the event to the chain of custody
+        caseProperties[tokenId].chainCustody.push(
+            ChainCustody(
+                block.timestamp,
+                releasedBy,
+                receivedBy,
+                "Rejected"
+            )
+        );
+    }
 
     // The following functions are overrides required by Solidity.
 
