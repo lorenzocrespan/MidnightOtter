@@ -464,19 +464,31 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         );
     }
 
+    /**
+     * @dev Function to get the properties of a specific exihibit given the exihibit identifier.
+     *
+     * @param tokenId Id of the exihibit.
+     *
+     */
     function getCaseProperties(
         uint256 tokenId
     ) public view returns (Exihibit memory) {
         return exihibitProperties[tokenId];
     }
 
+    /**
+     * @dev Function to get the exihibit owned by a specific user.
+     *
+     * @param user Address of the user.
+     *
+     */
     function getOwnerCases(
-        address owner
+        address user
     ) public view returns (uint256[] memory) {
-        uint256 balance = balanceOf(owner);
+        uint256 balance = balanceOf(user);
         uint256[] memory cases = new uint256[](balance);
         for (uint256 i = 0; i < balance; i++) {
-            cases[i] = tokenOfOwnerByIndex(owner, i);
+            cases[i] = tokenOfOwnerByIndex(user, i);
         }
         return cases;
     }
