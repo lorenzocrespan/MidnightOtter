@@ -8,9 +8,9 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
     // The following constants are required to manage the roles of the contract.
     bytes32 public constant MANTAINER_ROLE = keccak256("MANTAINER_ROLE");
-    bytes32 public constant PUBLIC_ADMINISTRATOR_ROLE = keccak256("PUBLIC_ADMINISTRATOR_ROLE");
-    bytes32 public constant EXPERT_ROLE = keccak256("EXPERT_ROLE");
+    bytes32 public constant PUBLIC_ADMIN_ROLE = keccak256("PUBLIC_ADMIN_ROLE");
     bytes32 public constant LAWYER_ROLE = keccak256("LAWYER_ROLE");
+    bytes32 public constant EXPERT_ROLE = keccak256("EXPERT_ROLE");
 
     /**
      * @dev Mapping the user request (requestId) with the request.
@@ -18,7 +18,7 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
      * @notice Given a request id, return the request.
      *
      */
-    mapping(uint256 => RequestRoleStruct) private requestRoleMap;
+    mapping(uint256 => RequestRoleStruct) private roleRequests;
 
     // Counter of the request id and the pending requests.
     uint256 private _nextRequestRole;
@@ -70,24 +70,105 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
      */
     mapping(address => uint256[]) public transferRequests;
 
+    /**
+     * @dev Mapping the case identifier (_nextCaseUniqueId) with the exihibit about the case.
+     *
+     * @notice Given a case number, return the case.
+     *
+     */
+    mapping(uint256 => Case) public caseProperties;
+
+    /**
+     * @dev Mapping the case number (_nextCaseUniqueId) with the exihibit about the case.
+     *
+     * @notice Given a case number, return the list of exihibits about the case.
+     *
+     */
+    mapping(uint256 => uint256[]) public caseExihibits;
+
+    // Counter of the case identifier.
+    uint256 private _nextCaseUniqueId;
     // Counter of the exihibit identifier.
     uint256 private _nextExihibitUniqueId;
 
-    struct ExihibitInfo {
-        // Properties of the case
+    /**
+     * @dev Structure of the case.
+     *
+     * @param caseInformation Properties of the case.
+     * @param assignedParties List of users (address) assigned to the case.
+     *
+     */
+    struct Case {
+        CaseInfo caseInformation;
+        address[] assignedParties;
+    }
+
+    /**
+     * @dev Structure of the case information.
+     *
+     * @param caseNumber Identifier of the case.
+     * @param caseName Name of the case.
+     * @param assignedJudge Identifier of the assigned judge.
+     * @param openingEpochTime Date of the opening of the case.
+     * @param caseStatus Status of the case.
+     */
+    struct CaseInfo {
         uint256 caseNumber;
         string caseName;
-        // Properties of the submitter officer
-        string submitterOfficer;
-        uint256 submitterId;
-        // Properties of the object
+        address assignedJudge;
+        uint256 openingEpochTime;
+        CaseStatus caseStatus;
+    }
+
+    /**
+     * @dev Enum of the case status.
+     *
+     * @notice Open: the case is open and the exihibit can be added.
+     * @notice Closed: the case is closed and the exihibit can't be added.
+     *
+     */
+    enum CaseStatus {
+        Open,
+        Closed
+    }
+
+    /**
+     * @dev Structure of the exihibit of the case.
+     *
+     * @param exhibitInformation Properties of the exihibit.
+     * @param requestedTransferReceiver Address of the user who requested the transfer.
+     * @param expertReports List of URI for the expert reports.
+     * @param chainCustody List of events for the chain of custody.
+     *
+     */
+    struct Exihibit {
+        ExihibitInfo exhibitInformation;
+        address requestedTransferReceiver;
+        string[] expertReports;
+        ChainCustody[] chainCustody;
+    }
+
+    /**
+     * @dev Structure of the exihibit information.
+     *
+     * @param caseNumber Identifier of the case.
+     * @param submitterId Address of the submitter officer.
+     * @param objectId Identifier of the object.
+     * @param objectQuantity Quantity of the object.
+     * @param objectDescription Description of the object.
+     * @param seizedLocation Location of the seizure.
+     * @param seizedEpochTime Date of the seizure.
+     * @param isExihibit Flag to indicate if the object is an exihibit.
+     *
+     */
+    struct ExihibitInfo {
+        uint256 caseNumber;
+        address submitterId;
         uint256 objectId;
         uint256 objectQuantity;
         string objectDescription;
-        // Properties of the seizure
         string seizedLocation;
         uint256 seizedEpochTime;
-        // Properties of the object status
         bool isExihibit;
     }
 
@@ -98,30 +179,13 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
      *  @param releasedBy Name of the officer who released the object.
      *  @param receivedBy Name of the officer who received the object.
      *  @param action Action of the event.
+     *
      */
     struct ChainCustody {
         uint256 timestamp;
         address releasedBy;
         address receivedBy;
         string action;
-    }
-
-    /**
-     *  @dev Structure of the exihibit of the case.
-     *
-     *  @param objectStatus Status of the object (Seized, Released, Destroyed). (Public admin can change it)
-     *
-     *  @param chainCustody List of events for the chain of custody.
-     */
-    struct Exihibit {
-        // Properties of the case
-        ExihibitInfo exhibitInformation;
-        // List of URI for the expert reports
-        string[] expertReports;
-        // List of events for the chain of custody
-        ChainCustody[] chainCustody;
-        // Requested transfer address
-        address requestedTransferReceiver;
     }
 
     /**
@@ -132,32 +196,30 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
      */
     constructor(address mantainer) ERC721("MidnightOtter", "MOK") {
         _grantRole(MANTAINER_ROLE, mantainer);
-        // TODO: For testing purpose, the mantainer is also the public administrator.
-        _grantRole(PUBLIC_ADMINISTRATOR_ROLE, mantainer);
+        // TODO: For testing purpose, the maintainer address is registered as public administrator, lawyer and expert.
+        _grantRole(PUBLIC_ADMIN_ROLE, mantainer);
+        _grantRole(LAWYER_ROLE, mantainer);
         _grantRole(EXPERT_ROLE, mantainer);
     }
 
-    // The following functions are required to manage the roles of the contract.
-
     /**
-     * @dev Function to request a role.
+     * @dev Function to request the registration of a new user to the smart contract.
      *
      * @param role Role to request (keccak256 of the role name).
      * @param name Name of the user.
      * @param surname Surname of the user.
      *
      */
-    function addRequestRoleList(
+    function addRoleRequest(
         bytes32 role,
         string memory name,
         string memory surname
     ) public {
         // Check if the user has already requested the role.
-        if (getRoleByAddress(msg.sender) != 0x00) {
+        if (getRoleByAddress(msg.sender) != 0x00)
             revert("MidnightOtter: The user has already requested the role.");
-        }
-        // Add the request to the list of requests.
-        requestRoleMap[_nextRequestRole] = RequestRoleStruct(
+        // Add the registration request to the list of pending requests.
+        roleRequests[_nextRequestRole] = RequestRoleStruct(
             _nextRequestRole,
             role,
             name,
@@ -170,79 +232,69 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
     }
 
     /**
-     * @dev Function to get the list of the requests.
+     * @dev Function to get the list of the requests in pending.
      *
      */
-    function getRequestRoleList()
+    function getRoleRequests()
         public
         view
+        onlyRole(PUBLIC_ADMIN_ROLE)
         returns (RequestRoleStruct[] memory)
     {
-        // Create the list of pending requests.
-        RequestRoleStruct[] memory requestRoleList = new RequestRoleStruct[](
+        // Create an array of requests with the length of the pending requests.
+        RequestRoleStruct[] memory requestRoleArray = new RequestRoleStruct[](
             _pendingRequestRole
         );
-        // Array index for the pending requests list.
-        uint256 pendingRequestId = 0;
-        // Add the requests to the list of pending requests.
+        // Array index for the pending requests.
+        uint256 pendingRequestIndex = 0;
+        // Iterate over the list of requests and add the pending requests to the array.
         for (uint256 i = 0; i < _nextRequestRole; i++) {
             if (
-                requestRoleMap[i].user != address(0) &&
-                pendingRequestId < _pendingRequestRole
-            ) {
-                requestRoleList[pendingRequestId++] = requestRoleMap[i];
-            }
+                roleRequests[i].user != address(0) &&
+                pendingRequestIndex < _pendingRequestRole
+            ) requestRoleArray[pendingRequestIndex++] = roleRequests[i];
         }
-        return requestRoleList;
+        return requestRoleArray;
     }
 
     /**
-     * @dev Function to grant a role, mantainer and public administrator only can call this function.
+     * @dev Function to accept a role request and grant the role to the user or reject the request.
+     *
+     * @notice Only a public administrator can call this function.
      *
      * @param requestId Id of the request.
+     * @param isAccepted Flag to indicate if the request is accepted or rejected.
      *
      */
-    function acceptRequestRole(
-        uint256 requestId
-    ) public onlyRole(PUBLIC_ADMINISTRATOR_ROLE) {
-        // Grant the role.
-        _grantRole(
-            requestRoleMap[requestId].role,
-            requestRoleMap[requestId].user
-        );
+    function respondRequestRole(
+        uint256 requestId,
+        bool isAccepted
+    ) public onlyRole(PUBLIC_ADMIN_ROLE) {
+        // If the request is accepted, grant the role to the user who requested it.
+        if (isAccepted)
+            _grantRole(
+                roleRequests[requestId].role,
+                roleRequests[requestId].user
+            );
         // Delete the request.
-        delete requestRoleMap[requestId];
+        delete roleRequests[requestId];
         // Decrement the counter of the pending requests.
         _pendingRequestRole--;
     }
 
     /**
-     * @dev Function to reject a role, mantainer and public administrator only can call this function.
-     *
-     * @param requestId Id of the request.
-     *
-     */
-    function rejectRequestRole(
-        uint256 requestId
-    ) public onlyRole(PUBLIC_ADMINISTRATOR_ROLE) {
-        // Delete the request.
-        delete requestRoleMap[requestId];
-        // Decrement the counter of the pending requests.
-        _pendingRequestRole--;
-    }
-
-    /**
-     * @dev Function to get the role of the user.
+     * @dev Function to get the role of the given user address.
      *
      * @param user User to get the role.
+     *
      * @return Role of the user (keccak256 of the role name).
      *
      */
     function getRoleByAddress(address user) public view returns (bytes32) {
         if (hasRole(MANTAINER_ROLE, user)) {
             return MANTAINER_ROLE;
-        } else if (hasRole(PUBLIC_ADMINISTRATOR_ROLE, user)) {
-            return PUBLIC_ADMINISTRATOR_ROLE;
+        } else if (hasRole(PUBLIC_ADMIN_ROLE, user)) {
+            return PUBLIC_ADMIN_ROLE;
         } else if (hasRole(EXPERT_ROLE, user)) {
             return EXPERT_ROLE;
         } else if (hasRole(LAWYER_ROLE, user)) {
@@ -252,24 +304,165 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         }
     }
 
-    // The following functions are required to manage the Exihibit of the case.
+    /**
+     * @dev Function to create a new case.
+     *
+     * @param caseName Name of the case.
+     *
+     */
+    function createCase(
+        string memory caseName
+    ) public onlyRole(PUBLIC_ADMIN_ROLE) {
+        // Create a new case with the given name
+        CaseInfo memory initialCaseStruct = CaseInfo(
+            _nextCaseUniqueId,
+            caseName,
+            msg.sender,
+            block.timestamp,
+            CaseStatus.Open
+        );
+        // Add the case to the list of cases.
+        caseProperties[initialCaseStruct.caseNumber] = Case(
+            initialCaseStruct,
+            new address[](0)
+        );
+        // Add the case to the list of cases
+        caseExihibits[initialCaseStruct.caseNumber] = new uint256[](0);
+        // Increment the counter of the case identifier
+        _nextCaseUniqueId++;
+    }
 
-    // Valid: [12,"pippo",0,"pippo",11,1,1,"pippo","pippo",111,0]
+    /**
+     * @dev Function to change the status of a case.
+     *
+     * @notice Only the assigned judge can call this function.
+     *
+     */
+    function setCaseStatus(
+        uint256 caseNumber,
+        CaseStatus caseStatus
+    ) public onlyRole(PUBLIC_ADMIN_ROLE) {
+        // Check if the sender is the assigned judge of the case
+        require(
+            caseProperties[caseNumber].caseInformation.assignedJudge ==
+                msg.sender,
+            "MidnightOtter: Only the assigned judge can change the status of the case."
+        );
+        // Update the status of the case
+        caseProperties[caseNumber].caseInformation.caseStatus = caseStatus;
+    }
+
+    /**
+     * @dev Function to assign a user to a case.
+     *
+     * @notice Only the assigned judge can call this function.
+     *
+     */
+    function assignUserToCase(
+        uint256 caseNumber,
+        address user
+    ) public onlyRole(PUBLIC_ADMIN_ROLE) {
+        // Check if the sender is the assigned judge of the case
+        require(
+            caseProperties[caseNumber].caseInformation.assignedJudge ==
+                msg.sender,
+            "MidnightOtter: Only the assigned judge can assign a user to the case."
+        );
+        // Check if the user is already assigned to the case
+        if (_hasAccessToCase(user, caseNumber))
+            revert("MidnightOtter: The user is already assigned to the case.");
+        // Add the user to the list of assigned users
+        caseProperties[caseNumber].assignedParties.push(user);
+    }
+
+    /**
+     * @dev Function to get the list of the exihibits of a case.
+     *
+     * @param caseNumber Identifier of the case.
+     *
+     * @return List of the exihibits of the case.
+     *
+     */
+    function getCaseExihibits(
+        uint256 caseNumber
+    ) public view returns (uint256[] memory) {
+        return caseExihibits[caseNumber];
+    }
+
+    /**
+     * @dev Function to add a new exihibit to a case.
+     *
+     * @notice Only the assigned users can call this function.
+     *
+     */
     function safeMint(
         address to,
-        ExihibitInfo memory initialTokenStruct
+        ExihibitInfo memory initialExihibitInfo
     ) public onlyRole(EXPERT_ROLE) {
+        // Check if the case exists and is open
+        require(
+            caseProperties[initialExihibitInfo.caseNumber]
+                .caseInformation
+                .caseNumber !=
+                0 &&
+                caseProperties[initialExihibitInfo.caseNumber]
+                    .caseInformation
+                    .caseStatus ==
+                CaseStatus.Open,
+            "MidnightOtter: The case doesn't exist or is closed."
+        );
+        // Check if the sender is one of the assigned users
+        require(
+            _hasAccessToCase(msg.sender, initialExihibitInfo.caseNumber),
+            "MidnightOtter: Only the assigned users can add an exihibit to the case."
+        );
+        // Generate a new exihibit identifier and mint the exihibit
         uint256 tokenId = _nextExihibitUniqueId++;
         _safeMint(to, tokenId);
-        Exihibit storage tokenStruct = exihibitProperties[tokenId];
-        tokenStruct.exhibitInformation = initialTokenStruct;
-        tokenStruct.expertReports = new string[](0);
-        tokenStruct.chainCustody.push(
-            ChainCustody(block.timestamp, msg.sender, msg.sender, "Seized")
+        // Create a new exihibit with the given information
+        Exihibit storage exihibit = exihibitProperties[tokenId];
+        exihibit.exhibitInformation = initialExihibitInfo;
+        exihibit.requestedTransferReceiver = address(0);
+        exihibit.expertReports = new string[](0);
+        exihibit.chainCustody = new ChainCustody[](0);
+        // Add the exihibit to the list of exihibits of the case
+        caseExihibits[initialExihibitInfo.caseNumber].push(tokenId);
+        // Add the event to the chain of custody
+        updateCustodyChain(
+            tokenId,
+            msg.sender,
+            address(0),
+            "Create exihibit and add to case"
         );
     }
 
-    // The following functions are required to interact with the Exihibit of the case.
+    /**
+     * @dev Function to set the validity of a specific exihibit.
+     *
+     * @param tokenId Id of the exihibit.
+     *
+     */
+    function setExihibitValidity(
+        uint256 caseNumber,
+        uint256 tokenId,
+        bool isValid
+    ) public onlyRole(PUBLIC_ADMIN_ROLE) {
+        // Check if the sender is the judge of the case
+        require(
+            caseProperties[caseNumber].caseInformation.assignedJudge ==
+                msg.sender,
+            "MidnightOtter: Only the assigned judge can set the validity of an exihibit."
+        );
+        // Update the validity of the exihibit
+        exihibitProperties[tokenId].exhibitInformation.isExihibit = isValid;
+        // Add the event to the chain of custody
+        updateCustodyChain(
+            tokenId,
+            msg.sender,
+            address(0),
+            "Set exihibit validity"
+        );
+    }
 
     function getCaseProperties(
         uint256 tokenId
@@ -563,5 +756,31 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         returns (bool)
     {
         return super.supportsInterface(interfaceId);
+    }
+
+    /**
+     * @dev Function to check if a user has access to a case.
+     *
+     * @param userAddress  Address of the user.
+     * @param caseNumber Identifier of the case.
+     *
+     * @return True if the user has access to the case, false otherwise.
+     *
+     */
+    function _hasAccessToCase(
+        address userAddress,
+        uint256 caseNumber
+    ) private view returns (bool) {
+        // Check if the user is one of the assigned users of the case
+        for (
+            uint256 i = 0;
+            i < caseProperties[caseNumber].assignedParties.length;
+            i++
+        ) {
+            if (caseProperties[caseNumber].assignedParties[i] == userAddress) {
+                return true;
+            }
+        }
+        return false;
     }
 }
