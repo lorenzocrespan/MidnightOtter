@@ -21,8 +21,8 @@
     "@nomicfoundation/hardhat-ignition": "^0.11.2",
     "@nomicfoundation/hardhat-toolbox": "^3.0.0",
     "@openzeppelin/contracts": "^5.0.1",
-    "ethers": "^6.9.0",
-    "hardhat": "^2.19.2",
+    "ethers": "^6.9.1",
+    "hardhat": "^2.19.4",
     "hardhat-ethernal": "^3.2.5"
   },
   "dependencies": {

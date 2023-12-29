@@ -14,14 +14,13 @@ const INFURA_API_KEY = process.env.INFURA_API_KEY;
 // Beware: NEVER put real Ether into testing accounts
 const SEPOLIA_PRIVATE_KEY = process.env.SEPOLIA_PRIVATE_KEY;
 
-
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
-  solidity: "0.8.20",
+  solidity: "0.8.23",
   settings: {
     optimizer: {
       enabled: true,
-      runs: 1000,
+      runs: 5,
     },
   },
   etherscan: {

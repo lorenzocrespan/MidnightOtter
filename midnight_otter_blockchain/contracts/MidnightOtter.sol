@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.23;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
@@ -7,7 +7,6 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
     // The following constants are required to manage the roles of the contract.
-    bytes32 public constant MANTAINER_ROLE = keccak256("MANTAINER_ROLE");
     bytes32 public constant PUBLIC_ADMIN_ROLE = keccak256("PUBLIC_ADMIN_ROLE");
     bytes32 public constant LAWYER_ROLE = keccak256("LAWYER_ROLE");
     bytes32 public constant EXPERT_ROLE = keccak256("EXPERT_ROLE");
@@ -37,8 +36,6 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
     struct RequestRoleStruct {
         uint256 requestId;
         bytes32 role;
-        string name;
-        string surname;
         address user;
     }
 
@@ -109,14 +106,12 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
      * @param caseNumber Identifier of the case.
      * @param caseName Name of the case.
      * @param assignedJudge Identifier of the assigned judge.
-     * @param openingEpochTime Date of the opening of the case.
      * @param caseStatus Status of the case.
      */
     struct CaseInfo {
         uint256 caseNumber;
         string caseName;
         address assignedJudge;
-        uint256 openingEpochTime;
         CaseStatus caseStatus;
     }
 
@@ -154,7 +149,6 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
      * @param caseNumber Identifier of the case.
      * @param submitterId Address of the submitter officer.
      * @param objectId Identifier of the object.
-     * @param objectQuantity Quantity of the object.
      * @param objectDescription Description of the object.
      * @param seizedLocation Location of the seizure.
      * @param seizedEpochTime Date of the seizure.
@@ -165,7 +159,6 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         uint256 caseNumber;
         address submitterId;
         uint256 objectId;
-        uint256 objectQuantity;
         string objectDescription;
         string seizedLocation;
         uint256 seizedEpochTime;
@@ -202,24 +195,15 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
      * @dev Function to request the registration of a new user to the smart contract.
      *
      * @param role Role to request (keccak256 of the role name).
-     * @param name Name of the user.
-     * @param surname Surname of the user.
      *
      */
-    function addRoleRequest(
-        bytes32 role,
-        string memory name,
-        string memory surname
-    ) public {
+    function addRoleReq(bytes32 role) public {
         // Check if the user has already requested the role.
-        if (getRoleByAddress(msg.sender) != 0x00)
-            revert("MidnightOtter: The user has already requested the role.");
+        if (getRoleByAddress(msg.sender) != 0x00) revert("MO_01");
         // Add the registration request to the list of pending requests.
         roleRequests[_nextRequestRole] = RequestRoleStruct(
             _nextRequestRole,
             role,
-            name,
-            surname,
             msg.sender
         );
         // Increment the counter of the request id and the counter of the pending requests.
@@ -231,7 +215,7 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
      * @dev Function to get the list of the requests in pending.
      *
      */
-    function getRoleRequests()
+    function getRoleReq()
         public
         view
         onlyRole(PUBLIC_ADMIN_ROLE)
@@ -245,10 +229,8 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         uint256 pendingRequestIndex = 0;
         // Iterate over the list of requests and add the pending requests to the array.
         for (uint256 i = 0; i < _nextRequestRole; i++) {
-            if (
-                roleRequests[i].user != address(0) &&
-                pendingRequestIndex < _pendingRequestRole
-            ) requestRoleArray[pendingRequestIndex++] = roleRequests[i];
+            if (roleRequests[i].user != address(0))
+                requestRoleArray[pendingRequestIndex++] = roleRequests[i];
         }
         return requestRoleArray;
     }
@@ -262,7 +244,7 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
      * @param isAccepted Flag to indicate if the request is accepted or rejected.
      *
      */
-    function respondRequestRole(
+    function responseReqRole(
         uint256 requestId,
         bool isAccepted
     ) public onlyRole(PUBLIC_ADMIN_ROLE) {
@@ -287,9 +269,7 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
      *
      */
     function getRoleByAddress(address user) public view returns (bytes32) {
-        if (hasRole(MANTAINER_ROLE, user)) {
-            return MANTAINER_ROLE;
-        } else if (hasRole(PUBLIC_ADMIN_ROLE, user)) {
+        if (hasRole(PUBLIC_ADMIN_ROLE, user)) {
             return PUBLIC_ADMIN_ROLE;
         } else if (hasRole(EXPERT_ROLE, user)) {
             return EXPERT_ROLE;
@@ -314,7 +294,6 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
             _nextCaseUniqueId,
             caseName,
             msg.sender,
-            block.timestamp,
             CaseStatus.Open
         );
         Case memory caseStruct = Case(initialCaseStruct, new address[](0));
@@ -340,7 +319,7 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         require(
             caseProperties[caseNumber].caseInformation.assignedJudge ==
                 msg.sender,
-            "MidnightOtter: Only the assigned judge can change the status of the case."
+            "MO_02"
         );
         // Update the status of the case
         caseProperties[caseNumber].caseInformation.caseStatus = caseStatus;
@@ -360,11 +339,10 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         require(
             caseProperties[caseNumber].caseInformation.assignedJudge ==
                 msg.sender,
-            "MidnightOtter: Only the assigned judge can assign a user to the case."
+            "MO_03"
         );
         // Check if the user is already assigned to the case
-        if (_hasAccessToCase(user, caseNumber))
-            revert("MidnightOtter: The user is already assigned to the case.");
+        if (_hasAccessToCase(user, caseNumber)) revert("MO_01");
         // Add the user to the list of assigned users
         caseProperties[caseNumber].assignedParties.push(user);
     }
@@ -402,32 +380,37 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
      *
      * @notice Only the assigned users can call this function.
      *
+     * @param caseNumber Identifier of the case.
+     * @param objectDescription Description of the object.
+     * @param seizedLocation Location of the seizure.
+     *
      */
     function safeMint(
         address to,
-        ExihibitInfo memory initialExihibitInfo
-    ) public onlyRole(EXPERT_ROLE) {
+        uint256 caseNumber,
+        string memory objectDescription,
+        string memory seizedLocation
+    ) public {
         // Check if the sender is one of the assigned users
-        require(
-            _hasAccessToCase(msg.sender, initialExihibitInfo.caseNumber),
-            "MidnightOtter: Only the assigned users can add an exihibit to the case."
-        );
+        require(_hasAccessToCase(msg.sender, caseNumber), "MO_03");
         // Generate a new exihibit identifier and mint the exihibit
         uint256 tokenId = _nextExihibitUniqueId++;
         _safeMint(to, tokenId);
         // Create a new exihibit with the given information
         Exihibit storage exihibit = exihibitProperties[tokenId];
-        exihibit.exhibitInformation = initialExihibitInfo;
+        exihibit.exhibitInformation.caseNumber = caseNumber;
+        exihibit.exhibitInformation.submitterId = msg.sender;
+        exihibit.exhibitInformation.objectId = tokenId;
+        exihibit.exhibitInformation.objectDescription = objectDescription;
+        exihibit.exhibitInformation.seizedLocation = seizedLocation;
+        exihibit.exhibitInformation.seizedEpochTime = block.timestamp;
         exihibit.requestedTransferReceiver = address(0);
+        exihibit.exhibitInformation.isExihibit = false;
+        exihibit.expertReports = new string[](0);
         // Add the exihibit to the list of exihibits of the case
-        caseExihibits[initialExihibitInfo.caseNumber].push(tokenId);
+        caseExihibits[caseNumber].push(tokenId);
         // Add the event to the chain of custody
-        updateCustodyChain(
-            tokenId,
-            msg.sender,
-            address(0),
-            "Create exihibit and add to case"
-        );
+        _updateCustodyChain(tokenId, msg.sender, address(0), "Create exihibit");
     }
 
     /**
@@ -439,23 +422,19 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
     function setExihibitValidity(
         uint256 caseNumber,
         uint256 tokenId,
-        bool isValid
+        bool isValid,
+        string memory actionPerformed
     ) public onlyRole(PUBLIC_ADMIN_ROLE) {
         // Check if the sender is the judge of the case
         require(
             caseProperties[caseNumber].caseInformation.assignedJudge ==
                 msg.sender,
-            "MidnightOtter: Only the assigned judge can set the validity of an exihibit."
+            "MO_02."
         );
         // Update the validity of the exihibit
         exihibitProperties[tokenId].exhibitInformation.isExihibit = isValid;
         // Add the event to the chain of custody
-        updateCustodyChain(
-            tokenId,
-            msg.sender,
-            address(0),
-            "Set exihibit validity"
-        );
+        _updateCustodyChain(tokenId, msg.sender, address(0), actionPerformed);
     }
 
     /**
@@ -487,46 +466,16 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         return cases;
     }
 
-    function grantShareExihibit(
-        uint256 tokenId,
-        address user
-    ) public onlyRole(EXPERT_ROLE) {
+    function grantShareExihibit(uint256 tokenId, address user) public {
         // Check if the sender is the owner of the case
-        require(
-            ownerOf(tokenId) == msg.sender,
-            "MidnightOtter: Only the owner of the case can share the exihibit."
-        );
-        // Check if the user is already in the list of users
-        for (uint256 i = 0; i < exihibitShares[tokenId].length; i++) {
-            require(
-                exihibitShares[tokenId][i] != user,
-                "MidnightOtter: The user is already in the list of users."
-            );
-        }
+        require(ownerOf(tokenId) == msg.sender, "MO_01");
         // Add the user to the list of users
         exihibitShares[tokenId].push(user);
     }
 
-    function ungrantShareExihibit(
-        uint256 tokenId,
-        address user
-    ) public onlyRole(EXPERT_ROLE) {
+    function ungrantShareExihibit(uint256 tokenId, address user) public {
         // Check if the sender is the owner of the case
-        require(
-            ownerOf(tokenId) == msg.sender,
-            "MidnightOtter: Only the owner of the case can unshare the exihibit."
-        );
-        // Check if the user is in the list of users
-        bool isUserInList = false;
-        for (uint256 i = 0; i < exihibitShares[tokenId].length; i++) {
-            if (exihibitShares[tokenId][i] == user) {
-                isUserInList = true;
-            }
-        }
-        require(
-            isUserInList,
-            "MidnightOtter: The user is not in the list of users."
-        );
+        require(ownerOf(tokenId) == msg.sender, "MO_01");
         // Remove the user from the list of users
         for (uint256 i = 0; i < exihibitShares[tokenId].length; i++) {
             if (exihibitShares[tokenId][i] == user) {
@@ -541,12 +490,9 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
      * @param tokenId Id of the exihibit.
      *
      */
-    function unshareExihibit(uint256 tokenId) public onlyRole(EXPERT_ROLE) {
+    function unshareExihibit(uint256 tokenId) public {
         // Check if the sender is the owner of the exihibit
-        require(
-            ownerOf(tokenId) == msg.sender,
-            "MidnightOtter: Only the owner of the case can unshare the exihibit."
-        );
+        require(ownerOf(tokenId) == msg.sender, "MO_02");
         // Remove all the users from the list of users
         for (uint256 i = 0; i < exihibitShares[tokenId].length; i++) {
             delete exihibitShares[tokenId][i];
@@ -560,10 +506,10 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
      * @param userAddress  Address of the user.
      *
      */
-    function shareOf(
+    function _shareOf(
         uint256 tokenId,
         address userAddress
-    ) public view returns (bool) {
+    ) private view returns (bool) {
         // Check if the user is in the list of users
         for (uint256 i = 0; i < exihibitShares[tokenId].length; i++) {
             if (exihibitShares[tokenId][i] == userAddress) {
@@ -585,20 +531,14 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         uint256 tokenId,
         address senderAddress,
         address receiverAddress
-    ) public onlyRole(EXPERT_ROLE) {
+    ) public {
         // Check if the sender is the owner of the exihibit
-        require(
-            ownerOf(tokenId) == msg.sender,
-            "MidnightOtter: Only the owner of the case can request a transfer."
-        );
+        require(ownerOf(tokenId) == msg.sender, "MO_01");
         // Clean the previous transfer request for the exihibit
-        if (
-            exihibitProperties[tokenId].requestedTransferReceiver != address(0)
-        ) {
+        if (exihibitProperties[tokenId].requestedTransferReceiver != address(0))
             delete transferRequests[
                 exihibitProperties[tokenId].requestedTransferReceiver
             ];
-        }
         // Revoke shared access to the exihibit
         unshareExihibit(tokenId);
         // Update exihibit information about the transfer request
@@ -607,80 +547,50 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         transferRequests[exihibitProperties[tokenId].requestedTransferReceiver]
             .push(tokenId);
         // Add the event to the chain of custody
-        updateCustodyChain(
+        _updateCustodyChain(
             tokenId,
             senderAddress,
             receiverAddress,
-            "Requested exihibit transfer"
+            "Requested transfer"
         );
     }
 
-    /**
-     * @dev Function to accept a transfer request for an exihibit.
-     *
-     * @param tokenId Id of the exihibit.
-     * @param responsePerformer Address of the entity performing the accept request.
-     * @param requestPerformer Address of the entity receiving the accept request.
-     *
-     */
-    function acceptRequestTrasfer(
+    function responseTrasfer(
         uint256 tokenId,
-        address responsePerformer,
-        address requestPerformer
-    ) public onlyRole(EXPERT_ROLE) {
+        address senderAddress,
+        address receiverAddress,
+        bool isAccepted
+    ) public {
         // Check if the receiver of the transfer is the sender of the response
         require(
             exihibitProperties[tokenId].requestedTransferReceiver == msg.sender,
-            "MidnightOtter: Only the user who receive the transfer can accept it."
+            "MO_01"
         );
-        // Trasfer the ownership of the exihibit to the receiver
-        _transfer(requestPerformer, responsePerformer, tokenId);
+        if (isAccepted) {
+            // Trasfer the ownership of the exihibit to the receiver
+            _transfer(senderAddress, receiverAddress, tokenId);
+            // Add the event to the chain of custody
+            _updateCustodyChain(
+                tokenId,
+                senderAddress,
+                receiverAddress,
+                "Accepted transfer"
+            );
+        } else {
+            // Add the event to the chain of custody
+            _updateCustodyChain(
+                tokenId,
+                senderAddress,
+                receiverAddress,
+                "Rejected transfer"
+            );
+        }
         // Update exihibit information about the transfer request
         exihibitProperties[tokenId].requestedTransferReceiver = address(0);
         // Clean the transfer request for the exihibit
         delete transferRequests[
             exihibitProperties[tokenId].requestedTransferReceiver
         ];
-        // Add the event to the chain of custody
-        updateCustodyChain(
-            tokenId,
-            responsePerformer,
-            requestPerformer,
-            "Accepted exihibit transfer"
-        );
-    }
-
-    /**
-     * @dev Function to reject a transfer request for an exihibit.
-     *
-     * @param tokenId Id of the exihibit.
-     * @param responsePerformer Address of the entity performing the accept request.
-     * @param requestPerformer Address of the entity receiving the accept request.
-     *
-     */
-    function rejectRequestTrasfer(
-        uint256 tokenId,
-        address responsePerformer,
-        address requestPerformer
-    ) public onlyRole(EXPERT_ROLE) {
-        // Check if the receiver of the transfer is the sender of the response
-        require(
-            exihibitProperties[tokenId].requestedTransferReceiver == msg.sender,
-            "MidnightOtter: Only the user who receive the transfer can accept it."
-        );
-        // Update exihibit information about the transfer request
-        exihibitProperties[tokenId].requestedTransferReceiver = address(0);
-        // Clean the transfer request for the exihibit
-        delete transferRequests[
-            exihibitProperties[tokenId].requestedTransferReceiver
-        ];
-        // Add the event to the chain of custody
-        updateCustodyChain(
-            tokenId,
-            responsePerformer,
-            requestPerformer,
-            "Rejected exihibit transfer"
-        );
     }
 
     /**
@@ -693,21 +603,16 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
     function addExpertReportUri(
         uint256 tokenId,
         string memory expertReportUri
-    ) public onlyRole(EXPERT_ROLE) {
+    ) public {
         // Check if the sender is the owner of the case or a shared user
         require(
-            ownerOf(tokenId) == msg.sender || shareOf(tokenId, msg.sender),
-            "MidnightOtter: Only the owner of the case or permitted users can add an expert report."
+            ownerOf(tokenId) == msg.sender || _shareOf(tokenId, msg.sender),
+            "MO_01"
         );
         // Add expert report to the list of expert reports
         exihibitProperties[tokenId].expertReports.push(expertReportUri);
         // Add the event to the chain of custody
-        updateCustodyChain(
-            tokenId,
-            msg.sender,
-            address(0),
-            "Added expert report"
-        );
+        _updateCustodyChain(tokenId, msg.sender, address(0), "Added report");
     }
 
     /**
@@ -719,7 +624,7 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
      * @param actionPerformed  Action performed on the exihibit.
      *
      */
-    function updateCustodyChain(
+    function _updateCustodyChain(
         uint256 tokenId,
         address senderAddress,
         address receiverAddress,
@@ -734,6 +639,31 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
                 actionPerformed
             )
         );
+    }
+
+    /**
+     * @dev Function to check if a user has access to a case.
+     *
+     * @param userAddress  Address of the user.
+     * @param caseNumber Identifier of the case.
+     *
+     * @return True if the user has access to the case, false otherwise.
+     *
+     */
+    function _hasAccessToCase(
+        address userAddress,
+        uint256 caseNumber
+    ) private view returns (bool) {
+        // Check if the user is one of the assigned users of the case
+        for (
+            uint256 i = 0;
+            i < caseProperties[caseNumber].assignedParties.length;
+            i++
+        )
+            if (caseProperties[caseNumber].assignedParties[i] == userAddress)
+                return true;
+
+        return false;
     }
 
     // The following functions are overrides required by Solidity.
@@ -762,31 +692,5 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         returns (bool)
     {
         return super.supportsInterface(interfaceId);
-    }
-
-    /**
-     * @dev Function to check if a user has access to a case.
-     *
-     * @param userAddress  Address of the user.
-     * @param caseNumber Identifier of the case.
-     *
-     * @return True if the user has access to the case, false otherwise.
-     *
-     */
-    function _hasAccessToCase(
-        address userAddress,
-        uint256 caseNumber
-    ) private view returns (bool) {
-        // Check if the user is one of the assigned users of the case
-        for (
-            uint256 i = 0;
-            i < caseProperties[caseNumber].assignedParties.length;
-            i++
-        ) {
-            if (caseProperties[caseNumber].assignedParties[i] == userAddress) {
-                return true;
-            }
-        }
-        return false;
     }
 }
