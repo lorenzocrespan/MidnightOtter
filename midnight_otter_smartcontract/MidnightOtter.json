@@ -1,37 +1,16 @@
 {
-  "address": "0xEdf405b780eF381D17B441bB5F581cd07CFf3044",
+  "address": "0xb71d1261Ca2D5089158FAbA5cfD5556681147804",
   "abi": [
     {
       "inputs": [
         {
           "internalType": "address",
-          "name": "mantainer",
+          "name": "midnightOtterRegistrationManager",
           "type": "address"
         }
       ],
       "stateMutability": "nonpayable",
       "type": "constructor"
-    },
-    {
-      "inputs": [],
-      "name": "AccessControlBadConfirmation",
-      "type": "error"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "account",
-          "type": "address"
-        },
-        {
-          "internalType": "bytes32",
-          "name": "neededRole",
-          "type": "bytes32"
-        }
-      ],
-      "name": "AccessControlUnauthorizedAccount",
-      "type": "error"
     },
     {
       "inputs": [],
@@ -158,6 +137,17 @@
       "type": "error"
     },
     {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "code",
+          "type": "uint256"
+        }
+      ],
+      "name": "ErrorOccurred",
+      "type": "error"
+    },
+    {
       "anonymous": false,
       "inputs": [
         {
@@ -212,81 +202,6 @@
       "inputs": [
         {
           "indexed": true,
-          "internalType": "bytes32",
-          "name": "role",
-          "type": "bytes32"
-        },
-        {
-          "indexed": true,
-          "internalType": "bytes32",
-          "name": "previousAdminRole",
-          "type": "bytes32"
-        },
-        {
-          "indexed": true,
-          "internalType": "bytes32",
-          "name": "newAdminRole",
-          "type": "bytes32"
-        }
-      ],
-      "name": "RoleAdminChanged",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "bytes32",
-          "name": "role",
-          "type": "bytes32"
-        },
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "account",
-          "type": "address"
-        },
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "sender",
-          "type": "address"
-        }
-      ],
-      "name": "RoleGranted",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "bytes32",
-          "name": "role",
-          "type": "bytes32"
-        },
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "account",
-          "type": "address"
-        },
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "sender",
-          "type": "address"
-        }
-      ],
-      "name": "RoleRevoked",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
           "internalType": "address",
           "name": "from",
           "type": "address"
@@ -308,79 +223,19 @@
       "type": "event"
     },
     {
-      "inputs": [],
-      "name": "DEFAULT_ADMIN_ROLE",
-      "outputs": [
-        {
-          "internalType": "bytes32",
-          "name": "",
-          "type": "bytes32"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "EXPERT_ROLE",
-      "outputs": [
-        {
-          "internalType": "bytes32",
-          "name": "",
-          "type": "bytes32"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "LAWYER_ROLE",
-      "outputs": [
-        {
-          "internalType": "bytes32",
-          "name": "",
-          "type": "bytes32"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "MANTAINER_ROLE",
-      "outputs": [
-        {
-          "internalType": "bytes32",
-          "name": "",
-          "type": "bytes32"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "PUBLIC_ADMINISTRATOR_ROLE",
-      "outputs": [
-        {
-          "internalType": "bytes32",
-          "name": "",
-          "type": "bytes32"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "requestId",
+          "name": "tokenId",
           "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "expertReportUri",
+          "type": "string"
         }
       ],
-      "name": "acceptRequestRole",
+      "name": "addExpertReportUri",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -391,19 +246,9 @@
           "internalType": "bytes32",
           "name": "role",
           "type": "bytes32"
-        },
-        {
-          "internalType": "string",
-          "name": "name",
-          "type": "string"
-        },
-        {
-          "internalType": "string",
-          "name": "surname",
-          "type": "string"
         }
       ],
-      "name": "addRequestRoleList",
+      "name": "addRoleRequest",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -422,6 +267,24 @@
         }
       ],
       "name": "approve",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "caseNumber",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        }
+      ],
+      "name": "assignUserToCase",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -451,77 +314,134 @@
           "internalType": "uint256",
           "name": "",
           "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
         }
       ],
-      "name": "caseProperties",
+      "name": "caseExihibits",
       "outputs": [
         {
           "internalType": "uint256",
-          "name": "caseNumber",
+          "name": "",
           "type": "uint256"
-        },
-        {
-          "internalType": "string",
-          "name": "caseName",
-          "type": "string"
-        },
-        {
-          "internalType": "enum MidnightOtter.CaseStateValue",
-          "name": "caseState",
-          "type": "uint8"
-        },
-        {
-          "internalType": "string",
-          "name": "submitterOfficer",
-          "type": "string"
-        },
-        {
-          "internalType": "uint256",
-          "name": "submitterId",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "objectId",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "objectQuantity",
-          "type": "uint256"
-        },
-        {
-          "internalType": "string",
-          "name": "objectDescription",
-          "type": "string"
-        },
-        {
-          "internalType": "string",
-          "name": "seizedLocation",
-          "type": "string"
-        },
-        {
-          "internalType": "uint256",
-          "name": "seizedEpochTime",
-          "type": "uint256"
-        },
-        {
-          "internalType": "enum MidnightOtter.ObjectStatusValue",
-          "name": "objectStatus",
-          "type": "uint8"
         }
       ],
       "stateMutability": "view",
       "type": "function"
     },
     {
-      "inputs": [],
-      "name": "getActualTokenId",
-      "outputs": [
+      "inputs": [
         {
           "internalType": "uint256",
           "name": "",
           "type": "uint256"
+        }
+      ],
+      "name": "caseProperties",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "caseNumber",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "caseName",
+              "type": "string"
+            },
+            {
+              "internalType": "address",
+              "name": "assignedJudge",
+              "type": "address"
+            },
+            {
+              "internalType": "enum MidnightOtter.CaseStatus",
+              "name": "caseStatus",
+              "type": "uint8"
+            }
+          ],
+          "internalType": "struct MidnightOtter.CaseInfo",
+          "name": "caseInformation",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "caseName",
+          "type": "string"
+        }
+      ],
+      "name": "createCase",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "exihibitProperties",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "caseNumber",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "submitterId",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "objectId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "objectDescription",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "seizedLocation",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "seizedEpochTime",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "isExihibit",
+              "type": "bool"
+            }
+          ],
+          "internalType": "struct MidnightOtter.ExihibitInfo",
+          "name": "exhibitInformation",
+          "type": "tuple"
+        },
+        {
+          "internalType": "address",
+          "name": "requestedTransferReceiver",
+          "type": "address"
         }
       ],
       "stateMutability": "view",
@@ -550,7 +470,26 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "tokenId",
+          "name": "caseNumber",
+          "type": "uint256"
+        }
+      ],
+      "name": "getCaseExihibits",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "caseNumber",
           "type": "uint256"
         }
       ],
@@ -559,64 +498,136 @@
         {
           "components": [
             {
-              "internalType": "uint256",
-              "name": "caseNumber",
-              "type": "uint256"
+              "components": [
+                {
+                  "internalType": "uint256",
+                  "name": "caseNumber",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "string",
+                  "name": "caseName",
+                  "type": "string"
+                },
+                {
+                  "internalType": "address",
+                  "name": "assignedJudge",
+                  "type": "address"
+                },
+                {
+                  "internalType": "enum MidnightOtter.CaseStatus",
+                  "name": "caseStatus",
+                  "type": "uint8"
+                }
+              ],
+              "internalType": "struct MidnightOtter.CaseInfo",
+              "name": "caseInformation",
+              "type": "tuple"
             },
             {
-              "internalType": "string",
-              "name": "caseName",
-              "type": "string"
+              "internalType": "address[]",
+              "name": "assignedParties",
+              "type": "address[]"
+            }
+          ],
+          "internalType": "struct MidnightOtter.Case",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getExihibitProperties",
+      "outputs": [
+        {
+          "components": [
+            {
+              "components": [
+                {
+                  "internalType": "uint256",
+                  "name": "caseNumber",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "address",
+                  "name": "submitterId",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "objectId",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "string",
+                  "name": "objectDescription",
+                  "type": "string"
+                },
+                {
+                  "internalType": "string",
+                  "name": "seizedLocation",
+                  "type": "string"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "seizedEpochTime",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "bool",
+                  "name": "isExihibit",
+                  "type": "bool"
+                }
+              ],
+              "internalType": "struct MidnightOtter.ExihibitInfo",
+              "name": "exhibitInformation",
+              "type": "tuple"
             },
             {
-              "internalType": "enum MidnightOtter.CaseStateValue",
-              "name": "caseState",
-              "type": "uint8"
-            },
-            {
-              "internalType": "string",
-              "name": "submitterOfficer",
-              "type": "string"
-            },
-            {
-              "internalType": "uint256",
-              "name": "submitterId",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "objectId",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "objectQuantity",
-              "type": "uint256"
-            },
-            {
-              "internalType": "string",
-              "name": "objectDescription",
-              "type": "string"
-            },
-            {
-              "internalType": "string",
-              "name": "seizedLocation",
-              "type": "string"
-            },
-            {
-              "internalType": "uint256",
-              "name": "seizedEpochTime",
-              "type": "uint256"
-            },
-            {
-              "internalType": "enum MidnightOtter.ObjectStatusValue",
-              "name": "objectStatus",
-              "type": "uint8"
+              "internalType": "address",
+              "name": "requestedTransferReceiver",
+              "type": "address"
             },
             {
               "internalType": "string[]",
               "name": "expertReports",
               "type": "string[]"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "uint256",
+                  "name": "timestamp",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "address",
+                  "name": "releasedBy",
+                  "type": "address"
+                },
+                {
+                  "internalType": "address",
+                  "name": "receivedBy",
+                  "type": "address"
+                },
+                {
+                  "internalType": "string",
+                  "name": "action",
+                  "type": "string"
+                }
+              ],
+              "internalType": "struct MidnightOtter.ChainCustody[]",
+              "name": "chainCustody",
+              "type": "tuple[]"
             }
           ],
           "internalType": "struct MidnightOtter.Exihibit",
@@ -631,7 +642,7 @@
       "inputs": [
         {
           "internalType": "address",
-          "name": "owner",
+          "name": "user",
           "type": "address"
         }
       ],
@@ -648,7 +659,7 @@
     },
     {
       "inputs": [],
-      "name": "getRequestRoleList",
+      "name": "getRoleRequests",
       "outputs": [
         {
           "components": [
@@ -663,122 +674,14 @@
               "type": "bytes32"
             },
             {
-              "internalType": "string",
-              "name": "name",
-              "type": "string"
-            },
-            {
-              "internalType": "string",
-              "name": "surname",
-              "type": "string"
-            },
-            {
               "internalType": "address",
               "name": "user",
               "type": "address"
             }
           ],
-          "internalType": "struct MidnightOtter.RequestRole[]",
+          "internalType": "struct MidnightOtterRegistrationManager.RequestRoleStruct[]",
           "name": "",
           "type": "tuple[]"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bytes32",
-          "name": "role",
-          "type": "bytes32"
-        }
-      ],
-      "name": "getRoleAdmin",
-      "outputs": [
-        {
-          "internalType": "bytes32",
-          "name": "",
-          "type": "bytes32"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "user",
-          "type": "address"
-        }
-      ],
-      "name": "getRoleByAddress",
-      "outputs": [
-        {
-          "internalType": "bytes32",
-          "name": "",
-          "type": "bytes32"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bytes32",
-          "name": "role",
-          "type": "bytes32"
-        },
-        {
-          "internalType": "address",
-          "name": "account",
-          "type": "address"
-        }
-      ],
-      "name": "grantRole",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "tokenId",
-          "type": "uint256"
-        },
-        {
-          "internalType": "address",
-          "name": "user",
-          "type": "address"
-        }
-      ],
-      "name": "grantShareExihibit",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bytes32",
-          "name": "role",
-          "type": "bytes32"
-        },
-        {
-          "internalType": "address",
-          "name": "account",
-          "type": "address"
-        }
-      ],
-      "name": "hasRole",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
         }
       ],
       "stateMutability": "view",
@@ -841,14 +744,55 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "registrationManager",
+      "outputs": [
+        {
+          "internalType": "contract MidnightOtterRegistrationManager",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "senderAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "receiverAddress",
+          "type": "address"
+        }
+      ],
+      "name": "requestTrasfer",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "uint256",
           "name": "requestId",
           "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "isAccepted",
+          "type": "bool"
         }
       ],
-      "name": "rejectRequestRole",
+      "name": "responseRoleRequest",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -856,35 +800,27 @@
     {
       "inputs": [
         {
-          "internalType": "bytes32",
-          "name": "role",
-          "type": "bytes32"
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
         },
         {
           "internalType": "address",
-          "name": "callerConfirmation",
+          "name": "senderAddress",
           "type": "address"
-        }
-      ],
-      "name": "renounceRole",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bytes32",
-          "name": "role",
-          "type": "bytes32"
         },
         {
           "internalType": "address",
-          "name": "account",
+          "name": "receiverAddress",
           "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "isAccepted",
+          "type": "bool"
         }
       ],
-      "name": "revokeRole",
+      "name": "responseTrasfer",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -897,71 +833,19 @@
           "type": "address"
         },
         {
-          "components": [
-            {
-              "internalType": "uint256",
-              "name": "caseNumber",
-              "type": "uint256"
-            },
-            {
-              "internalType": "string",
-              "name": "caseName",
-              "type": "string"
-            },
-            {
-              "internalType": "enum MidnightOtter.CaseStateValue",
-              "name": "caseState",
-              "type": "uint8"
-            },
-            {
-              "internalType": "string",
-              "name": "submitterOfficer",
-              "type": "string"
-            },
-            {
-              "internalType": "uint256",
-              "name": "submitterId",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "objectId",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "objectQuantity",
-              "type": "uint256"
-            },
-            {
-              "internalType": "string",
-              "name": "objectDescription",
-              "type": "string"
-            },
-            {
-              "internalType": "string",
-              "name": "seizedLocation",
-              "type": "string"
-            },
-            {
-              "internalType": "uint256",
-              "name": "seizedEpochTime",
-              "type": "uint256"
-            },
-            {
-              "internalType": "enum MidnightOtter.ObjectStatusValue",
-              "name": "objectStatus",
-              "type": "uint8"
-            },
-            {
-              "internalType": "string[]",
-              "name": "expertReports",
-              "type": "string[]"
-            }
-          ],
-          "internalType": "struct MidnightOtter.Exihibit",
-          "name": "initialTokenStruct",
-          "type": "tuple"
+          "internalType": "uint256",
+          "name": "caseNumber",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "objectDescription",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "seizedLocation",
+          "type": "string"
         }
       ],
       "name": "safeMint",
@@ -1042,48 +926,46 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "tokenId",
+          "name": "caseNumber",
           "type": "uint256"
         },
         {
-          "internalType": "address",
-          "name": "user",
-          "type": "address"
+          "internalType": "enum MidnightOtter.CaseStatus",
+          "name": "caseStatus",
+          "type": "uint8"
         }
       ],
-      "name": "shareOf",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
+      "name": "setCaseStatus",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "",
+          "name": "caseNumber",
           "type": "uint256"
         },
         {
           "internalType": "uint256",
-          "name": "",
+          "name": "tokenId",
           "type": "uint256"
-        }
-      ],
-      "name": "sharedExihibit",
-      "outputs": [
+        },
         {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
+          "internalType": "bool",
+          "name": "isValid",
+          "type": "bool"
+        },
+        {
+          "internalType": "string",
+          "name": "actionPerformed",
+          "type": "string"
         }
       ],
-      "stateMutability": "view",
+      "name": "setExihibitValidity",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -1219,112 +1101,25 @@
     {
       "inputs": [
         {
-          "internalType": "uint256",
-          "name": "tokenId",
-          "type": "uint256"
-        },
-        {
           "internalType": "address",
-          "name": "user",
-          "type": "address"
-        }
-      ],
-      "name": "ungrantShareExihibit",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "to",
+          "name": "",
           "type": "address"
         },
         {
-          "components": [
-            {
-              "internalType": "uint256",
-              "name": "caseNumber",
-              "type": "uint256"
-            },
-            {
-              "internalType": "string",
-              "name": "caseName",
-              "type": "string"
-            },
-            {
-              "internalType": "enum MidnightOtter.CaseStateValue",
-              "name": "caseState",
-              "type": "uint8"
-            },
-            {
-              "internalType": "string",
-              "name": "submitterOfficer",
-              "type": "string"
-            },
-            {
-              "internalType": "uint256",
-              "name": "submitterId",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "objectId",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "objectQuantity",
-              "type": "uint256"
-            },
-            {
-              "internalType": "string",
-              "name": "objectDescription",
-              "type": "string"
-            },
-            {
-              "internalType": "string",
-              "name": "seizedLocation",
-              "type": "string"
-            },
-            {
-              "internalType": "uint256",
-              "name": "seizedEpochTime",
-              "type": "uint256"
-            },
-            {
-              "internalType": "enum MidnightOtter.ObjectStatusValue",
-              "name": "objectStatus",
-              "type": "uint8"
-            },
-            {
-              "internalType": "string[]",
-              "name": "expertReports",
-              "type": "string[]"
-            }
-          ],
-          "internalType": "struct MidnightOtter.Exihibit",
-          "name": "initialTokenStruct",
-          "type": "tuple"
-        }
-      ],
-      "name": "unsafeMint",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
           "internalType": "uint256",
-          "name": "tokenId",
+          "name": "",
           "type": "uint256"
         }
       ],
-      "name": "unshareExihibit",
-      "outputs": [],
-      "stateMutability": "nonpayable",
+      "name": "transferRequests",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     }
   ]

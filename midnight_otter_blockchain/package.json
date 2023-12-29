@@ -10,7 +10,7 @@
     "hardhat clean": "npx hardhat clean",
     "hardhat compile": "npx hardhat compile",
     "hardhat wipe": "npx hardhat ignition wipe deploymentId futureId",
-    "deploy --network sepolia": "npx hardhat ignition deploy ignition/modules/midnightOtter.js --network sepolia",
+    "deploy --network sepolia": "npx hardhat ignition deploy ignition/modules/MidnightOtter.js --network sepolia",
     "export artifacts": "node scripts/exportArtifact.js"
   },
   "keywords": [],
