@@ -195,11 +195,7 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
      *
      */
     constructor(address mantainer) ERC721("MidnightOtter", "MOK") {
-        _grantRole(MANTAINER_ROLE, mantainer);
-        // TODO: For testing purpose, the maintainer address is registered as public administrator, lawyer and expert.
         _grantRole(PUBLIC_ADMIN_ROLE, mantainer);
-        _grantRole(LAWYER_ROLE, mantainer);
-        _grantRole(EXPERT_ROLE, mantainer);
     }
 
     /**
@@ -321,11 +317,9 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
             block.timestamp,
             CaseStatus.Open
         );
+        Case memory caseStruct = Case(initialCaseStruct, new address[](0));
         // Add the case to the list of cases.
-        caseProperties[initialCaseStruct.caseNumber] = Case(
-            initialCaseStruct,
-            new address[](0)
-        );
+        caseProperties[initialCaseStruct.caseNumber] = caseStruct;
         // Add the case to the list of cases
         caseExihibits[initialCaseStruct.caseNumber] = new uint256[](0);
         // Increment the counter of the case identifier
@@ -390,6 +384,20 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
     }
 
     /**
+     * @dev Function to get the properties of a case.
+     *
+     * @param caseNumber Identifier of the case.
+     *
+     * @return Properties of the case.
+     *
+     */
+    function getCaseProperties(
+        uint256 caseNumber
+    ) public view returns (Case memory) {
+        return caseProperties[caseNumber];
+    }
+
+    /**
      * @dev Function to add a new exihibit to a case.
      *
      * @notice Only the assigned users can call this function.
@@ -399,18 +407,6 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         address to,
         ExihibitInfo memory initialExihibitInfo
     ) public onlyRole(EXPERT_ROLE) {
-        // Check if the case exists and is open
-        require(
-            caseProperties[initialExihibitInfo.caseNumber]
-                .caseInformation
-                .caseNumber !=
-                0 &&
-                caseProperties[initialExihibitInfo.caseNumber]
-                    .caseInformation
-                    .caseStatus ==
-                CaseStatus.Open,
-            "MidnightOtter: The case doesn't exist or is closed."
-        );
         // Check if the sender is one of the assigned users
         require(
             _hasAccessToCase(msg.sender, initialExihibitInfo.caseNumber),
@@ -423,8 +419,6 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         Exihibit storage exihibit = exihibitProperties[tokenId];
         exihibit.exhibitInformation = initialExihibitInfo;
         exihibit.requestedTransferReceiver = address(0);
-        exihibit.expertReports = new string[](0);
-        exihibit.chainCustody = new ChainCustody[](0);
         // Add the exihibit to the list of exihibits of the case
         caseExihibits[initialExihibitInfo.caseNumber].push(tokenId);
         // Add the event to the chain of custody
@@ -470,7 +464,7 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
      * @param tokenId Id of the exihibit.
      *
      */
-    function getCaseProperties(
+    function getExihibitProperties(
         uint256 tokenId
     ) public view returns (Exihibit memory) {
         return exihibitProperties[tokenId];
