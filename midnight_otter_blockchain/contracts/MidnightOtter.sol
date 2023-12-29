@@ -5,11 +5,13 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
-contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
+contract MidnightOtterRegistrationManager is AccessControl {
     // The following constants are required to manage the roles of the contract.
     bytes32 public constant PUBLIC_ADMIN_ROLE = keccak256("PUBLIC_ADMIN_ROLE");
     bytes32 public constant LAWYER_ROLE = keccak256("LAWYER_ROLE");
     bytes32 public constant EXPERT_ROLE = keccak256("EXPERT_ROLE");
+
+    error ErrorOccurred(uint256 code);
 
     /**
      * @dev Mapping the user request (requestId) with the request.
@@ -40,22 +42,119 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
     }
 
     /**
+     * @dev Constructor of the contract.
+     *
+     * @param admin Address of the public administrator.
+     *
+     */
+    constructor(address admin) {
+        // Set the role of the mantainer of the contract.
+        _grantRole(PUBLIC_ADMIN_ROLE, admin);
+    }
+
+    /**
+     * @dev Function to request the registration of a new user to the smart contract.
+     *
+     * @param role Role to request (keccak256 of the role name).
+     * @param user Name of the user.
+     *
+     */
+    function addRoleReq(bytes32 role, address user) external {
+        // Check if the user has already requested the role.
+        if (getRoleByAddress(user) != 0x00) revert ErrorOccurred(1);
+        // Add the registration request to the list of pending requests.
+        roleRequests[_nextRequestRole] = RequestRoleStruct(
+            _nextRequestRole,
+            role,
+            user
+        );
+        // Increment the counter of the request id and the counter of the pending requests.
+        _nextRequestRole++;
+        _pendingRequestRole++;
+    }
+
+    /**
+     * @dev Function to get the list of the requests in pending.
+     *
+     */
+    function getRoleReq() external view returns (RequestRoleStruct[] memory) {
+        // Create an array of requests with the length of the pending requests.
+        RequestRoleStruct[] memory requestRoleArray = new RequestRoleStruct[](
+            _pendingRequestRole
+        );
+        // Array index for the pending requests.
+        uint256 pendingRequestIndex = 0;
+        // Iterate over the list of requests and add the pending requests to the array.
+        for (uint256 i = 0; i < _nextRequestRole; i++) {
+            if (roleRequests[i].user != address(0))
+                requestRoleArray[pendingRequestIndex++] = roleRequests[i];
+        }
+        return requestRoleArray;
+    }
+
+    /**
+     * @dev Function to accept a role request and grant the role to the user or reject the request.
+     *
+     * @notice Only a public administrator can call this function.
+     *
+     * @param requestId Id of the request.
+     * @param isAccepted Flag to indicate if the request is accepted or rejected.
+     * @param user User wallet address.
+     *
+     */
+    function responseRoleReq(
+        address user,
+        uint256 requestId,
+        bool isAccepted
+    ) external {
+        // Check if the sender is a public administrator.
+        require(hasRole(PUBLIC_ADMIN_ROLE, user));
+        // Check if the request is valid.
+        require(roleRequests[requestId].user != address(0));
+        // Check if the request is accepted.
+        if (isAccepted)
+            // Grant the role to the user.
+            _grantRole(
+                roleRequests[requestId].role,
+                roleRequests[requestId].user
+            );
+        // Delete the request.
+        delete roleRequests[requestId];
+        // Decrement the counter of the pending requests.
+        _pendingRequestRole--;
+    }
+
+    /**
+     * @dev Function to get the role of the given user address.
+     *
+     * @param user User to get the role.
+     *
+     * @return Role of the user (keccak256 of the role name).
+     *
+     */
+    function getRoleByAddress(address user) public view returns (bytes32) {
+        if (hasRole(PUBLIC_ADMIN_ROLE, user)) {
+            return PUBLIC_ADMIN_ROLE;
+        } else if (hasRole(EXPERT_ROLE, user)) {
+            return EXPERT_ROLE;
+        } else if (hasRole(LAWYER_ROLE, user)) {
+            return LAWYER_ROLE;
+        } else {
+            return 0x00;
+        }
+    }
+}
+
+contract MidnightOtter is ERC721, ERC721Enumerable {
+    error ErrorOccurred(uint256 code);
+
+    /**
      * @dev Mapping the exihibit identifier (_nextExihibitUniqueId) with the exihibit data.
      *
      * @notice Given a exihibit identifier, return the exihibit data.
      *
      */
     mapping(uint256 => Exihibit) public exihibitProperties;
-
-    /**
-     * @dev Mapping the exihibit identifier (_nextExihibitUniqueId) with the users who have
-     * access to the exihibit of the case.
-     *
-     * @notice Given a exihibit identifier, return the list of users (address) who have
-     * access to the exihibit of the case.
-     *
-     */
-    mapping(uint256 => address[]) public exihibitShares;
 
     /**
      * @dev Mapping the address of the user (user's wallet address) with the list of
@@ -181,58 +280,45 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         string action;
     }
 
+    MidnightOtterRegistrationManager public registrationManager;
+
     /**
      * @dev Constructor of the contract.
      *
-     * @param mantainer Address of the mantainer of the contract.
+     * @param midnightOtterRegistrationManager Address of the MidnightOtterRegistrationManager contract.
      *
      */
-    constructor(address mantainer) ERC721("MidnightOtter", "MOK") {
-        _grantRole(PUBLIC_ADMIN_ROLE, mantainer);
+    constructor(
+        address midnightOtterRegistrationManager
+    ) ERC721("MidnightOtter", "MOK") {
+        // Set the role of the mantainer of the contract.
+        registrationManager = MidnightOtterRegistrationManager(
+            midnightOtterRegistrationManager
+        );
     }
 
     /**
-     * @dev Function to request the registration of a new user to the smart contract.
+     * @dev Function to add a new role request.
      *
      * @param role Role to request (keccak256 of the role name).
      *
      */
-    function addRoleReq(bytes32 role) public {
-        // Check if the user has already requested the role.
-        if (getRoleByAddress(msg.sender) != 0x00) revert("MO_01");
-        // Add the registration request to the list of pending requests.
-        roleRequests[_nextRequestRole] = RequestRoleStruct(
-            _nextRequestRole,
-            role,
-            msg.sender
-        );
-        // Increment the counter of the request id and the counter of the pending requests.
-        _nextRequestRole++;
-        _pendingRequestRole++;
+    function addRoleRequest(bytes32 role) public {
+        registrationManager.addRoleReq(role, msg.sender);
     }
 
     /**
-     * @dev Function to get the list of the requests in pending.
+     * @dev Function to get the list of the role requests.
+     *
+     * @return List of the role requests.
      *
      */
-    function getRoleReq()
+    function getRoleRequests()
         public
         view
-        onlyRole(PUBLIC_ADMIN_ROLE)
-        returns (RequestRoleStruct[] memory)
+        returns (MidnightOtterRegistrationManager.RequestRoleStruct[] memory)
     {
-        // Create an array of requests with the length of the pending requests.
-        RequestRoleStruct[] memory requestRoleArray = new RequestRoleStruct[](
-            _pendingRequestRole
-        );
-        // Array index for the pending requests.
-        uint256 pendingRequestIndex = 0;
-        // Iterate over the list of requests and add the pending requests to the array.
-        for (uint256 i = 0; i < _nextRequestRole; i++) {
-            if (roleRequests[i].user != address(0))
-                requestRoleArray[pendingRequestIndex++] = roleRequests[i];
-        }
-        return requestRoleArray;
+        return registrationManager.getRoleReq();
     }
 
     /**
@@ -244,40 +330,8 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
      * @param isAccepted Flag to indicate if the request is accepted or rejected.
      *
      */
-    function responseReqRole(
-        uint256 requestId,
-        bool isAccepted
-    ) public onlyRole(PUBLIC_ADMIN_ROLE) {
-        // If the request is accepted, grant the role to the user who requested it.
-        if (isAccepted)
-            _grantRole(
-                roleRequests[requestId].role,
-                roleRequests[requestId].user
-            );
-        // Delete the request.
-        delete roleRequests[requestId];
-        // Decrement the counter of the pending requests.
-        _pendingRequestRole--;
-    }
-
-    /**
-     * @dev Function to get the role of the given user address.
-     *
-     * @param user User to get the role.
-     *
-     * @return Role of the user (keccak256 of the role name).
-     *
-     */
-    function getRoleByAddress(address user) public view returns (bytes32) {
-        if (hasRole(PUBLIC_ADMIN_ROLE, user)) {
-            return PUBLIC_ADMIN_ROLE;
-        } else if (hasRole(EXPERT_ROLE, user)) {
-            return EXPERT_ROLE;
-        } else if (hasRole(LAWYER_ROLE, user)) {
-            return LAWYER_ROLE;
-        } else {
-            return 0x00;
-        }
+    function responseRoleRequest(uint256 requestId, bool isAccepted) public {
+        registrationManager.responseRoleReq(msg.sender, requestId, isAccepted);
     }
 
     /**
@@ -286,9 +340,7 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
      * @param caseName Name of the case.
      *
      */
-    function createCase(
-        string memory caseName
-    ) public onlyRole(PUBLIC_ADMIN_ROLE) {
+    function createCase(string memory caseName) public {
         // Create a new case with the given name
         CaseInfo memory initialCaseStruct = CaseInfo(
             _nextCaseUniqueId,
@@ -311,15 +363,11 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
      * @notice Only the assigned judge can call this function.
      *
      */
-    function setCaseStatus(
-        uint256 caseNumber,
-        CaseStatus caseStatus
-    ) public onlyRole(PUBLIC_ADMIN_ROLE) {
+    function setCaseStatus(uint256 caseNumber, CaseStatus caseStatus) public {
         // Check if the sender is the assigned judge of the case
         require(
             caseProperties[caseNumber].caseInformation.assignedJudge ==
-                msg.sender,
-            "MO_02"
+                msg.sender
         );
         // Update the status of the case
         caseProperties[caseNumber].caseInformation.caseStatus = caseStatus;
@@ -331,18 +379,14 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
      * @notice Only the assigned judge can call this function.
      *
      */
-    function assignUserToCase(
-        uint256 caseNumber,
-        address user
-    ) public onlyRole(PUBLIC_ADMIN_ROLE) {
+    function assignUserToCase(uint256 caseNumber, address user) public {
         // Check if the sender is the assigned judge of the case
         require(
             caseProperties[caseNumber].caseInformation.assignedJudge ==
-                msg.sender,
-            "MO_03"
+                msg.sender
         );
         // Check if the user is already assigned to the case
-        if (_hasAccessToCase(user, caseNumber)) revert("MO_01");
+        if (_hasAccessToCase(user, caseNumber)) revert ErrorOccurred(1);
         // Add the user to the list of assigned users
         caseProperties[caseNumber].assignedParties.push(user);
     }
@@ -392,7 +436,7 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         string memory seizedLocation
     ) public {
         // Check if the sender is one of the assigned users
-        require(_hasAccessToCase(msg.sender, caseNumber), "MO_03");
+        require(_hasAccessToCase(msg.sender, caseNumber));
         // Generate a new exihibit identifier and mint the exihibit
         uint256 tokenId = _nextExihibitUniqueId++;
         _safeMint(to, tokenId);
@@ -424,12 +468,11 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         uint256 tokenId,
         bool isValid,
         string memory actionPerformed
-    ) public onlyRole(PUBLIC_ADMIN_ROLE) {
+    ) public {
         // Check if the sender is the judge of the case
         require(
             caseProperties[caseNumber].caseInformation.assignedJudge ==
-                msg.sender,
-            "MO_02."
+                msg.sender
         );
         // Update the validity of the exihibit
         exihibitProperties[tokenId].exhibitInformation.isExihibit = isValid;
@@ -466,59 +509,6 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         return cases;
     }
 
-    function grantShareExihibit(uint256 tokenId, address user) public {
-        // Check if the sender is the owner of the case
-        require(ownerOf(tokenId) == msg.sender, "MO_01");
-        // Add the user to the list of users
-        exihibitShares[tokenId].push(user);
-    }
-
-    function ungrantShareExihibit(uint256 tokenId, address user) public {
-        // Check if the sender is the owner of the case
-        require(ownerOf(tokenId) == msg.sender, "MO_01");
-        // Remove the user from the list of users
-        for (uint256 i = 0; i < exihibitShares[tokenId].length; i++) {
-            if (exihibitShares[tokenId][i] == user) {
-                delete exihibitShares[tokenId][i];
-            }
-        }
-    }
-
-    /**
-     * @dev Function to revoke shared access to an exihibit.
-     *
-     * @param tokenId Id of the exihibit.
-     *
-     */
-    function unshareExihibit(uint256 tokenId) public {
-        // Check if the sender is the owner of the exihibit
-        require(ownerOf(tokenId) == msg.sender, "MO_02");
-        // Remove all the users from the list of users
-        for (uint256 i = 0; i < exihibitShares[tokenId].length; i++) {
-            delete exihibitShares[tokenId][i];
-        }
-    }
-
-    /**
-     * @dev Function to check if a user has access to an exihibit.
-     *
-     * @param tokenId Id of the exihibit.
-     * @param userAddress  Address of the user.
-     *
-     */
-    function _shareOf(
-        uint256 tokenId,
-        address userAddress
-    ) private view returns (bool) {
-        // Check if the user is in the list of users
-        for (uint256 i = 0; i < exihibitShares[tokenId].length; i++) {
-            if (exihibitShares[tokenId][i] == userAddress) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     /**
      * @dev Function to request a transfer for an exihibit.
      *
@@ -533,14 +523,12 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         address receiverAddress
     ) public {
         // Check if the sender is the owner of the exihibit
-        require(ownerOf(tokenId) == msg.sender, "MO_01");
+        require(ownerOf(tokenId) == msg.sender);
         // Clean the previous transfer request for the exihibit
         if (exihibitProperties[tokenId].requestedTransferReceiver != address(0))
             delete transferRequests[
                 exihibitProperties[tokenId].requestedTransferReceiver
             ];
-        // Revoke shared access to the exihibit
-        unshareExihibit(tokenId);
         // Update exihibit information about the transfer request
         exihibitProperties[tokenId].requestedTransferReceiver = receiverAddress;
         // Add the exihibit to the list of exihibit transfer requests for the receiver
@@ -563,8 +551,7 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
     ) public {
         // Check if the receiver of the transfer is the sender of the response
         require(
-            exihibitProperties[tokenId].requestedTransferReceiver == msg.sender,
-            "MO_01"
+            exihibitProperties[tokenId].requestedTransferReceiver == msg.sender
         );
         if (isAccepted) {
             // Trasfer the ownership of the exihibit to the receiver
@@ -605,10 +592,7 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
         string memory expertReportUri
     ) public {
         // Check if the sender is the owner of the case or a shared user
-        require(
-            ownerOf(tokenId) == msg.sender || _shareOf(tokenId, msg.sender),
-            "MO_01"
-        );
+        require(ownerOf(tokenId) == msg.sender);
         // Add expert report to the list of expert reports
         exihibitProperties[tokenId].expertReports.push(expertReportUri);
         // Add the event to the chain of custody
@@ -685,12 +669,7 @@ contract MidnightOtter is ERC721, ERC721Enumerable, AccessControl {
 
     function supportsInterface(
         bytes4 interfaceId
-    )
-        public
-        view
-        override(ERC721, ERC721Enumerable, AccessControl)
-        returns (bool)
-    {
+    ) public view override(ERC721, ERC721Enumerable) returns (bool) {
         return super.supportsInterface(interfaceId);
     }
 }
