@@ -48,7 +48,7 @@ export default function UserSignupForm({
   const { writeAsync } = useContractWrite({
     address: contractInfo?.address,
     abi: contractInfo?.abi,
-    functionName: "addRequestRoleList",
+    functionName: "addRoleRequest",
   });
 
   const { isConnected } = useAccount();
@@ -64,11 +64,7 @@ export default function UserSignupForm({
         if (account) {
           // function addRequestRoleList(bytes32 role, string memory name, string memory surname)
           writeAsync({
-            args: [
-              Web3.utils.keccak256(dataRequestedAccount.role),
-              dataRequestedAccount.name,
-              dataRequestedAccount.surname,
-            ],
+            args: [Web3.utils.keccak256(dataRequestedAccount.role)],
           }).then(() => {
             setIsLoading(false);
           });
@@ -88,20 +84,6 @@ export default function UserSignupForm({
       <FormProvider {...methods}>
         <form>
           <div className="grid gap-3">
-            <IdentityInput
-              {...signFormConfig.name}
-              disabled={isLoadingComponent}
-            />
-            {errors.name && (
-              <SubtitleInputText text={errors.name.message?.toString()} />
-            )}
-            <IdentityInput
-              {...signFormConfig.surname}
-              disabled={isLoadingComponent}
-            />
-            {errors.surname && (
-              <SubtitleInputText text={errors.surname.message?.toString()} />
-            )}
             <IdentityInput
               {...signFormConfig.role}
               disabled={isLoadingComponent}

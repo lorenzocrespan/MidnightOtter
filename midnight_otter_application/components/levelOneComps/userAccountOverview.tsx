@@ -41,7 +41,7 @@ export default function UserAccountOverviewComponent() {
     switch (role) {
       case Web3.utils.sha3("MANTAINER_ROLE"):
         return "Mantainer";
-      case Web3.utils.keccak256("PUBLIC_ADMINISTRATOR_ROLE"):
+      case Web3.utils.keccak256("PUBLIC_ADMIN_ROLE"):
         return "Public Administrator";
       case Web3.utils.keccak256("EXPERT_ROLE"):
         return "Expert";

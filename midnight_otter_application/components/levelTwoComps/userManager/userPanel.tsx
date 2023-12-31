@@ -6,12 +6,7 @@ import { getContractAbiAndAddress } from "@/services/smartcontractUtils";
 import { InjectedConnector } from "@wagmi/core";
 import { useCallback, useEffect, useState } from "react";
 import { Abi, Narrow } from "viem";
-import {
-  useAccount,
-  useContractRead,
-  useContractWrite,
-  useSignMessage,
-} from "wagmi";
+import { useAccount, useContractRead, useContractWrite } from "wagmi";
 import { connect } from "wagmi/actions";
 
 export function UserManagerPanel() {
@@ -44,7 +39,7 @@ export function UserManagerPanel() {
   const { data } = useContractRead({
     address: contractInfo?.address,
     abi: contractInfo?.abi,
-    functionName: "getRequestRoleList",
+    functionName: "getRoleRequests",
     enabled: isConnected,
     account: address,
   });
@@ -63,31 +58,25 @@ export function UserManagerPanel() {
     account: address,
   });
 
+  const responseFunction = useContractWrite({
+    address: contractInfo?.address,
+    abi: contractInfo?.abi,
+    functionName: "responseRoleRequest",
+    account: address,
+  });
+
   const approveAction = (isApprove: boolean, idRequest: number) => {
     console.log(idRequest);
-    if (isApprove) {
-      acceptFunction
-        .writeAsync({
-          args: [idRequest],
-        })
-        .then(() => {
-          console.log("Approve");
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    } else {
-      rejextFunction
-        .writeAsync({
-          args: [idRequest],
-        })
-        .then(() => {
-          console.log("Reject");
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
+    responseFunction
+      .writeAsync({
+        args: [idRequest, isApprove],
+      })
+      .then(() => {
+        console.log("Response");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
