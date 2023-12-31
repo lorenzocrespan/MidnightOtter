@@ -1,5 +1,5 @@
 {
-  "address": "0xb71d1261Ca2D5089158FAbA5cfD5556681147804",
+  "address": "0xC3f9028F95Cd20abF55D0F120B5ACe37f28A7Ed1",
   "abi": [
     {
       "inputs": [
@@ -652,6 +652,25 @@
           "internalType": "uint256[]",
           "name": "",
           "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        }
+      ],
+      "name": "getRoleByAddress",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
         }
       ],
       "stateMutability": "view",

@@ -124,6 +124,10 @@ contract MidnightOtterRegistrationManager is AccessControl {
         _pendingRequestRole--;
     }
 
+    function getRole(address user) external view returns (bytes32) {
+        return getRoleByAddress(user);
+    }
+
     /**
      * @dev Function to get the role of the given user address.
      *
@@ -332,6 +336,18 @@ contract MidnightOtter is ERC721, ERC721Enumerable {
      */
     function responseRoleRequest(uint256 requestId, bool isAccepted) public {
         registrationManager.responseRoleReq(msg.sender, requestId, isAccepted);
+    }
+
+    /**
+     * @dev Function to get the role of the given user address.
+     *
+     * @param user User to get the role.
+     *
+     * @return Role of the user (keccak256 of the role name).
+     *
+     */
+    function getRoleByAddress(address user) public view returns (bytes32) {
+        return registrationManager.getRole(user);
     }
 
     /**
