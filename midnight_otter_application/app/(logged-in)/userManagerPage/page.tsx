@@ -1,4 +1,4 @@
-import { UserManagerPanel } from "@/components/levelTwoComps/userManager/userPanel";
+import { UserManagerPanel } from "@/components/levelTwoComps/managerUser/userPanel";
 
 export default function Page() {
   return (

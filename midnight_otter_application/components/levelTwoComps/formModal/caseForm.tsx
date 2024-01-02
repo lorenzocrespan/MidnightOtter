@@ -1,24 +1,52 @@
 "use client";
 // React imports
-import { useState, HTMLAttributes } from "react";
+import { useCallback, useEffect, useState, HTMLAttributes } from "react";
+
 // Import utils and types
 import { addCasesFormConfig } from "@/config/addCasesFormConfig";
 import { FormProvider, useForm } from "react-hook-form";
 // React components imports
 import { InputCase } from "@/components/levelOneComps/form/inputCase";
-import { ToggleCase } from "@/components/levelOneComps/form/toggleCase";
+import { getContractAbiAndAddress } from "@/services/smartcontractUtils";
 
 import { SubtitleInputText } from "@/components/baseComponents/inputs/subtitleInputText";
 import { AbsoluteSpinner } from "@/components/pageComponents/spinnerLoadingComponent";
 // Wagmi imports
-import { useContractWrite } from "wagmi";
-// Import smart contract
-import contractABI from "@/services/smartcontract.json";
+import { connect } from "wagmi/actions";
+import { InjectedConnector } from "wagmi/connectors/injected";
+import { useContractWrite, useAccount } from "wagmi";
+import { Abi, Narrow } from "viem";
 
 // Form props interface
 interface FormProps extends HTMLAttributes<HTMLDivElement> {}
 
 export function AddCaseForm({ className, ...props }: FormProps) {
+  connect({
+    connector: new InjectedConnector(),
+  })
+    .then(() => {
+      console.log("User is connected to Metamask.");
+    })
+    .catch(() => {
+      console.log("User is not registered");
+    });
+
+  const fetchData = useCallback(async () => {
+    const contractInfo = await getContractAbiAndAddress();
+    setContractInfo(contractInfo);
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const [contractInfo, setContractInfo] = useState<{
+    abi: Narrow<readonly unknown[] | Abi>;
+    address: `0x${string}`;
+  }>();
+
+  const { address, isConnected } = useAccount();
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const methods = useForm();
@@ -28,27 +56,19 @@ export function AddCaseForm({ className, ...props }: FormProps) {
   } = methods;
 
   const { writeAsync } = useContractWrite({
-    address: "0xCcCac956aD1e1B84880aD653c815266864A95bd1",
-    abi: contractABI.abi,
-    functionName: "unsafeMint",
+    address: contractInfo?.address,
+    abi: contractInfo?.abi,
+    functionName: "createCase",
+    account: address,
   });
 
   const onSubmit = async (dataExihibits: {
     [key: string]: number | string | string[];
   }) => {
     setIsLoading(true);
-    // Valid: [12,"pippo",0,"pippo",11,1,1,"pippo","pippo",111,0,[""],[10,"a","a","transazione"]]
+    // Valid: ["nameCase"]
     writeAsync({
-      args: [
-        "0xCcCac956aD1e1B84880aD653c815266864A95bd1",
-        [
-          dataExihibits.numberCase as number,
-          dataExihibits.nameObject,
-          dataExihibits.nameObject,
-          dataExihibits.nameObject,
-          ["https://ipf"],
-        ],
-      ],
+      args: [dataExihibits.caseName],
     }).then(() => {
       setIsLoading(false);
     });
@@ -69,18 +89,6 @@ export function AddCaseForm({ className, ...props }: FormProps) {
                 Inserire le informazioni relative al caso.
               </p>
               <div className="flex flex-row gap-5">
-                <div className="flex flex-col gap-2">
-                  <h3 className="text-xl font-bold">Numero del caso</h3>
-                  <InputCase
-                    {...addCasesFormConfig.caseNumber}
-                    disabled={isLoading}
-                  />
-                  {errors.caseNumber && (
-                    <SubtitleInputText
-                      text={errors.caseNumber.message?.toString()}
-                    />
-                  )}
-                </div>
                 <div className="flex grow flex-col gap-2">
                   <h3 className="text-xl font-bold">Nome del caso</h3>
                   <InputCase
@@ -90,84 +98,6 @@ export function AddCaseForm({ className, ...props }: FormProps) {
                   {errors.caseName && (
                     <SubtitleInputText
                       text={errors.caseName.message?.toString()}
-                    />
-                  )}
-                </div>
-              </div>
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold">
-                Informazioni oggetto acquisito
-              </h1>
-              <p className="text-xl">
-                Inserire le informazioni relative all&apos;oggetto acquisito.
-              </p>
-              <div className="flex flex-row gap-5">
-                <div className="flex grow flex-col gap-2">
-                  <h3 className="text-xl font-bold">Identificativo oggetto</h3>
-                  <InputCase
-                    {...addCasesFormConfig.objectId}
-                    disabled={isLoading}
-                  />
-                  {errors.objectId && (
-                    <SubtitleInputText
-                      text={errors.objectId.message?.toString()}
-                    />
-                  )}
-                </div>
-                <div className="flex grow flex-col gap-2">
-                  <h3 className="text-xl font-bold">Quantità</h3>
-                  <InputCase
-                    {...addCasesFormConfig.objectQuantity}
-                    disabled={isLoading}
-                  />
-                  {errors.objectQuantity && (
-                    <SubtitleInputText
-                      text={errors.objectQuantity.message?.toString()}
-                    />
-                  )}
-                </div>
-              </div>
-              <h3 className="text-xl font-bold">
-                Descrizione dell&apos;oggetto
-              </h3>
-              <InputCase
-                {...addCasesFormConfig.objectDescription}
-                disabled={isLoading}
-              />
-              {errors.objectDescription && (
-                <SubtitleInputText
-                  text={errors.objectDescription.message?.toString()}
-                />
-              )}
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold">Informazioni acquisizione</h1>
-              <p className="text-xl">
-                Inserire le informazioni relative all&apos;acquisizione.
-              </p>
-              <div className="flex flex-row gap-5">
-                <div className="flex grow flex-col gap-2">
-                  <h3 className="text-xl font-bold">Località</h3>
-                  <InputCase
-                    {...addCasesFormConfig.seizedLocation}
-                    disabled={isLoading}
-                  />
-                  {errors.seizedLocation && (
-                    <SubtitleInputText
-                      text={errors.seizedLocation.message?.toString()}
-                    />
-                  )}
-                </div>
-                <div className="flex grow flex-col gap-2">
-                  <h3 className="text-xl font-bold">Data</h3>
-                  <InputCase
-                    {...addCasesFormConfig.seizedEpochTime}
-                    disabled={isLoading}
-                  />
-                  {errors.seizedEpochTime && (
-                    <SubtitleInputText
-                      text={errors.seizedEpochTime.message?.toString()}
                     />
                   )}
                 </div>

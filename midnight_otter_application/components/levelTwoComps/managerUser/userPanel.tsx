@@ -44,20 +44,6 @@ export function UserManagerPanel() {
     account: address,
   });
 
-  const acceptFunction = useContractWrite({
-    address: contractInfo?.address,
-    abi: contractInfo?.abi,
-    functionName: "acceptRequestRole",
-    account: address,
-  });
-
-  const rejextFunction = useContractWrite({
-    address: contractInfo?.address,
-    abi: contractInfo?.abi,
-    functionName: "rejectRequestRole",
-    account: address,
-  });
-
   const responseFunction = useContractWrite({
     address: contractInfo?.address,
     abi: contractInfo?.abi,
@@ -116,18 +102,6 @@ export function UserManagerPanel() {
           </div>
         )}
       </div>
-      {/* { <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold">Lista utenti</h1>
-        <p className="text-base">Seleziona l&apos;utente da visualizzare.</p>
-      </div>
-      <div className="flex flex-col gap-5">
-        <UserManagerCard />
-      </div>
-      <div className="flex flex-col gap-5">
-        <button className="flex flex-col justify-center">
-          <p className="text-base">Applica</p>
-        </button>
-      </div>} */}
     </div>
   );
 }

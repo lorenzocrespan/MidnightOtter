@@ -2,6 +2,7 @@
 import { Metadata } from "next";
 // React components imports
 import { AddCaseForm } from "@/components/levelTwoComps/formModal/caseForm";
+import { CasePanel } from "@/components/levelTwoComps/managerCase/casePanel";
 
 // Update the metadata for the page.
 export const metadata: Metadata = {
@@ -13,6 +14,7 @@ export default function Page() {
   return (
     <div className="flex flex-col gap-5">
       <AddCaseForm />
+      <CasePanel />
     </div>
   );
 }

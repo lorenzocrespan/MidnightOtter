@@ -15,9 +15,14 @@ export const loggedPageLeftConfig: BaseNavbarType = {
       disabled: false,
     },
     {
-      title: "Upload exhibit",
+      title: "Add new case",
+      href: "/addCasePage",
+      disabled: false,
+    },
+    {
+      title: "Add new exihibit",
       // title: "Caricamento reperti",
-      href: "/uploadCasePage",
+      href: "/addExihibitPage",
       disabled: false,
     },
     {
