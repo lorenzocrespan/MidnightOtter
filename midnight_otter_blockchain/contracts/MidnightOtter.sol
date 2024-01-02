@@ -186,6 +186,15 @@ contract MidnightOtter is ERC721, ERC721Enumerable {
      */
     mapping(uint256 => uint256[]) public caseExihibits;
 
+     /**
+     * @dev Mapping the address of the user (user's wallet address) with the list of cases in charge.
+     *
+     * @notice Given a user's wallet address, return the list of cases in charge.
+     *
+     */
+    mapping(address => uint256[]) private userCases;
+
+
     // Counter of the case identifier.
     uint256 private _nextCaseUniqueId;
     // Counter of the exihibit identifier.
@@ -369,6 +378,8 @@ contract MidnightOtter is ERC721, ERC721Enumerable {
         caseProperties[initialCaseStruct.caseNumber] = caseStruct;
         // Add the case to the list of cases
         caseExihibits[initialCaseStruct.caseNumber] = new uint256[](0);
+        // Add the case to the list of cases in charge of the user
+        userCases[msg.sender].push(initialCaseStruct.caseNumber);
         // Increment the counter of the case identifier
         _nextCaseUniqueId++;
     }
@@ -405,6 +416,16 @@ contract MidnightOtter is ERC721, ERC721Enumerable {
         if (_hasAccessToCase(user, caseNumber)) revert ErrorOccurred(1);
         // Add the user to the list of assigned users
         caseProperties[caseNumber].assignedParties.push(user);
+    }
+
+    /**
+     * @dev Function to get the list of the cases of a user.
+     *
+     * @return List of the cases.
+     *
+     */
+    function getCases() public view returns (uint256[] memory) {
+        return userCases[msg.sender];
     }
 
     /**

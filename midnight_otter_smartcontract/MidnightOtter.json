@@ -1,5 +1,5 @@
 {
-  "address": "0xC3f9028F95Cd20abF55D0F120B5ACe37f28A7Ed1",
+  "address": "0x91b04587218Ef7ACabfB6c0401E5a6F3FC39034e",
   "abi": [
     {
       "inputs": [
@@ -533,6 +533,19 @@
           "internalType": "struct MidnightOtter.Case",
           "name": "",
           "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getCases",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
         }
       ],
       "stateMutability": "view",
