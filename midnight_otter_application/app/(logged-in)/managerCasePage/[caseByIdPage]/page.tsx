@@ -1,7 +1,7 @@
 "use client";
 
 import { getContractAbiAndAddress } from "@/services/smartcontractUtils";
-import { isCase } from "@/types/smartContractType";
+import { isCase, isNumberArray } from "@/types/smartContractType";
 import { InjectedConnector } from "@wagmi/core";
 import { useCallback, useEffect, useState } from "react";
 import { Abi, Narrow } from "viem";
@@ -73,13 +73,13 @@ export default function Page({ params }: { params: { caseByIdPage: string } }) {
           </div>
           <div className="flex flex-col">
             <h2>Prove raccolte</h2>
-            {caseExihibits.isSuccess && caseExihibits.data ? (
+            {caseExihibits.isSuccess && isNumberArray(caseExihibits.data) ? (
               <div className="flex flex-col">
-                {caseExihibits.data <= 0 ? (
+                {caseExihibits.data.length === 0 ? (
                   <h2>Non ci sono prove per questo caso</h2>
                 ) : (
                   caseExihibits.data.map((exihibit: any) => (
-                    <div className="flex flex-col">
+                    <div className="flex flex-col" key={exihibit.exihibitId}>
                       <h2>Nome prova: {exihibit.exihibitName}</h2>
                       <h2>Descrizione prova: {exihibit.exihibitDescription}</h2>
                       <h2>Stato prova: {exihibit.exihibitStatus}</h2>

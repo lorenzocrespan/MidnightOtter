@@ -31,3 +31,7 @@ export type Case = {
   caseInformation: CaseInfo;
   assignedParties: string[];
 };
+
+export function isNumberArray(obj: any): obj is number[] {
+  return z.array(z.number()).safeParse(obj).success;
+}

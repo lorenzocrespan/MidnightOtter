@@ -6,7 +6,6 @@ import { addCasesFormConfig } from "@/config/addCasesFormConfig";
 import { FormProvider, useForm } from "react-hook-form";
 // React components imports
 import { InputCase } from "@/components/levelOneComps/form/inputCase";
-import { ToggleCase } from "@/components/levelOneComps/form/toggleCase";
 
 import { SubtitleInputText } from "@/components/baseComponents/inputs/subtitleInputText";
 import { AbsoluteSpinner } from "@/components/pageComponents/spinnerLoadingComponent";
