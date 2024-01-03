@@ -15,8 +15,8 @@ export const loggedPageLeftConfig: BaseNavbarType = {
       disabled: false,
     },
     {
-      title: "Add new case",
-      href: "/addCasePage",
+      title: "Manager case",
+      href: "/managerCasePage",
       disabled: false,
     },
     {
