@@ -1,5 +1,6 @@
 "use client";
 
+import { AddPartyForm } from "@/components/levelTwoComps/formModal/partyForm";
 import { getContractAbiAndAddress } from "@/services/smartcontractUtils";
 import { isCase, isNumberArray } from "@/types/smartContractType";
 import { InjectedConnector } from "@wagmi/core";
@@ -7,6 +8,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Abi, Narrow } from "viem";
 import { useAccount, useContractRead, useContractWrite } from "wagmi";
 import { connect } from "wagmi/actions";
+import { number } from "zod";
 
 export default function Page({ params }: { params: { caseByIdPage: string } }) {
   connect({
@@ -62,7 +64,7 @@ export default function Page({ params }: { params: { caseByIdPage: string } }) {
     <div>
       <div>My Post: {params.caseByIdPage}</div>
       {caseInfo.isSuccess && isCase(caseInfo.data) ? (
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-2">
           <div className="flex flex-col">
             <h2>Nome caso: {caseInfo.data.caseInformation.caseName}</h2>
             <h2>
@@ -91,6 +93,7 @@ export default function Page({ params }: { params: { caseByIdPage: string } }) {
               <h2>Errore nel caricamento dei dati 1</h2>
             )}
           </div>
+          <AddPartyForm caseNumber={Number(params.caseByIdPage)} />
         </div>
       ) : (
         <h2>Errore nel caricamento dei dati 3</h2>

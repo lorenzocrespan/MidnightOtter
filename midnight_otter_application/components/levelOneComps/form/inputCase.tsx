@@ -6,6 +6,9 @@ export function InputCase(inputCaseProps: InputFormDataType) {
 
   const switchPatternApply = (type: string) => {
     switch (type) {
+      case "address":
+        // Any caracter start with 0x and 40 characters long
+        return /^0x[a-fA-F0-9]{40}$/;
       case "email":
         return /^[^@]+@[^@]+\.[^@]+$/;
       case "name":
