@@ -2,13 +2,12 @@
 
 import { AddPartyForm } from "@/components/levelTwoComps/formModal/partyForm";
 import { getContractAbiAndAddress } from "@/services/smartcontractUtils";
-import { isCase, isNumberArray } from "@/types/smartContractType";
+import { isBigIntArray, isCase } from "@/types/smartContractType";
 import { InjectedConnector } from "@wagmi/core";
 import { useCallback, useEffect, useState } from "react";
 import { Abi, Narrow } from "viem";
 import { useAccount, useContractRead, useContractWrite } from "wagmi";
 import { connect } from "wagmi/actions";
-import { number } from "zod";
 
 export default function Page({ params }: { params: { caseByIdPage: string } }) {
   connect({
@@ -56,7 +55,7 @@ export default function Page({ params }: { params: { caseByIdPage: string } }) {
     account: address,
     args: [params.caseByIdPage],
     onSuccess: (data) => {
-      console.log("Data:", data);
+      console.log("Data exihibits:", data);
     },
   });
 
@@ -75,14 +74,14 @@ export default function Page({ params }: { params: { caseByIdPage: string } }) {
           </div>
           <div className="flex flex-col">
             <h2>Prove raccolte</h2>
-            {caseExihibits.isSuccess && isNumberArray(caseExihibits.data) ? (
+            {caseExihibits.isSuccess && isBigIntArray(caseExihibits.data) ? (
               <div className="flex flex-col">
                 {caseExihibits.data.length === 0 ? (
                   <h2>Non ci sono prove per questo caso</h2>
                 ) : (
                   caseExihibits.data.map((exihibit: any) => (
-                    <div className="flex flex-col" key={exihibit.exihibitId}>
-                      <h2>Nome prova: {exihibit.exihibitName}</h2>
+                    <div className="flex flex-col" key={Number(exihibit)}>
+                      <h2>Numero prova: {Number(exihibit)}</h2>
                       <h2>Descrizione prova: {exihibit.exihibitDescription}</h2>
                       <h2>Stato prova: {exihibit.exihibitStatus}</h2>
                     </div>

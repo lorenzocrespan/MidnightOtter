@@ -35,3 +35,7 @@ export type Case = {
 export function isNumberArray(obj: any): obj is number[] {
   return z.array(z.number()).safeParse(obj).success;
 }
+
+export function isBigIntArray(obj: any): obj is bigint[] {
+  return z.array(z.bigint()).safeParse(obj).success;
+}
