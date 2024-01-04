@@ -39,3 +39,7 @@ export function isNumberArray(obj: any): obj is number[] {
 export function isBigIntArray(obj: any): obj is bigint[] {
   return z.array(z.bigint()).safeParse(obj).success;
 }
+
+export function isArray(obj: any): obj is any[] {
+  return z.array(z.any()).safeParse(obj).success;
+}
