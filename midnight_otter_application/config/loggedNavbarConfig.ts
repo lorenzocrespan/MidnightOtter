@@ -32,6 +32,12 @@ export const loggedPageLeftConfig: BaseNavbarType = {
       disabled: false,
     },
     {
+      title: "Send exihibit",
+      // title: "Lista reperti",
+      href: "/exihibitPage",
+      disabled: false,
+    },
+    {
       title: "Search page",
       href: "/searchpage",
       disabled: false,
