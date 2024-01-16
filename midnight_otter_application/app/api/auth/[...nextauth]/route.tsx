@@ -39,7 +39,6 @@ const auth = async (req: NextRequest, res: RouteHandlerContext) => {
             domain: nextAuthUrl.host,
           });
 
-          console.log("result", result);
           if (result.success) {
             //TODO: ajeje
             return {
@@ -48,6 +47,7 @@ const auth = async (req: NextRequest, res: RouteHandlerContext) => {
           }
           return null;
         } catch (e) {
+          console.warn("Errore sign-in", e);
           return null;
         }
       },
