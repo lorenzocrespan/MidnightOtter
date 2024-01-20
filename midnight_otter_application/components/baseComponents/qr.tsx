@@ -11,12 +11,9 @@ export function QR() {
         text={"https://github.com/bunlong/next-qrcode"}
         options={{
           errorCorrectionLevel: "H",
-          margin: 3,
-          scale: 4,
+          margin: 2,
+          scale: 5,
           width: 300,
-          color: {
-            dark: "#010599FF",
-          },
         }}
       />
     </div>

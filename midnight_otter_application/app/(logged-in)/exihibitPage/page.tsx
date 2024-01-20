@@ -89,7 +89,7 @@ export default function Page() {
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold">Prove a carico</h1>
         <p className="text-base">
-          Lista delle prove attualmente a carico dell'utente.
+          Lista delle prove attualmente a carico dell&apos;utente.
         </p>
       </div>
       <div className="flex flex-col gap-5">
