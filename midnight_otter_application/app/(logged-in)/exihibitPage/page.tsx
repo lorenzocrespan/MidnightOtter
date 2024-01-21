@@ -14,13 +14,7 @@ import { groupedExihibitsCasesType, isArray } from "@/types/smartContractType";
 export default function Page() {
   connect({
     connector: new InjectedConnector(),
-  })
-    .then(() => {
-      console.log("User is connected to Metamask.");
-    })
-    .catch(() => {
-      console.log("User is not registered");
-    });
+  }).catch(() => {});
 
   const fetchData = useCallback(async () => {
     const contractInfo = await getContractAbiAndAddress();
@@ -99,7 +93,7 @@ export default function Page() {
             <span className="w-full border-t border-slate-400" />
             <div className="flex flex-col items-center gap-4">
               {groupedExihibitsCases[keyName].map((item: any, idx: any) => (
-                <div key={idx} className="flex w-11/12  flex-col gap-2">
+                <div key={idx} className="flex w-full flex-col gap-2">
                   <div className="flex gap-5 text-lg">
                     <div className="flex flex-col p-2">
                       <h2 className="font-bold">

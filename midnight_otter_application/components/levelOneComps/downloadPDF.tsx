@@ -7,13 +7,7 @@ const PDFDownloadLink = dynamic(
     loading: () => <p>Loading...</p>,
   }
 );
-import {
-  Document,
-  Page,
-  StyleSheet,
-  View,
-  Text,
-} from "@react-pdf/renderer";
+import { Document, Page, StyleSheet, View, Text } from "@react-pdf/renderer";
 
 const MyDoc = () => (
   <Document>
@@ -43,12 +37,12 @@ const styles = StyleSheet.create({
 
 export default function DownloadCase() {
   return (
-    <div>
+    <button className="my-4 self-end rounded-md  px-2 py-2 text-sm text-white outline outline-1 outline-slate-400 hover:bg-gray-800">
       <PDFDownloadLink document={<MyDoc />} fileName="somename.pdf">
         {({ blob, url, loading, error }) =>
-          loading ? "Loading document..." : "Download now!"
+          loading ? "Loading document..." : "Scarica il PDF"
         }
       </PDFDownloadLink>
-    </div>
+    </button>
   );
 }

@@ -1,14 +1,13 @@
 "use client";
-import * as React from "react";
 import { useQRCode } from "next-qrcode";
 
-export function QR() {
+export default function QR({ exihibit }: { exihibit: string }) {
   const { Canvas } = useQRCode();
 
   return (
-    <div className="h-fit w-auto rounded-md border-2">
+    <div className="m-10 h-fit w-fit self-center rounded-md border-2">
       <Canvas
-        text={"https://github.com/bunlong/next-qrcode"}
+        text={"https://midnight-otter.vercel.app/exihibitPage/" + exihibit}
         options={{
           errorCorrectionLevel: "H",
           margin: 2,
